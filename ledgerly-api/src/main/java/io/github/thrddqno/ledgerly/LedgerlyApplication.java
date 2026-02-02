@@ -1,4 +1,4 @@
-package com.example.ledgerly;
+package io.github.thrddqno.ledgerly;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

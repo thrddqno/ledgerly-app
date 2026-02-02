@@ -1,4 +1,4 @@
-package com.example.ledgerly;
+package io.github.thrddqno.ledgerly;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
