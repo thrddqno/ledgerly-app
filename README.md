@@ -56,7 +56,7 @@
 
 ## License
 
-Distributed under the project_license. See `LICENSE.txt` for more information.
+Distributed under the Apache-2.0 license. See [`LICENSE.txt`](https://github.com/thrddqno/ledgerly-app/?tab=Apache-2.0-1-ov-file) for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -70,3 +70,4 @@ Distributed under the project_license. See `LICENSE.txt` for more information.
 [license-url]: https://github.com/thrddqno/ledgerly-app/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/thrddqno
+
