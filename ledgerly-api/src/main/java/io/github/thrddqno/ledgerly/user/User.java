@@ -1,4 +1,4 @@
-package io.github.thrddqno.ledgerly.domain.models;
+package io.github.thrddqno.ledgerly.user;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
@@ -6,9 +6,11 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.*;
 
+import io.github.thrddqno.ledgerly.wallet.Wallet;
 
 @Data
 @NoArgsConstructor
@@ -39,4 +41,7 @@ public class User {
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Wallet> wallets;
 }
