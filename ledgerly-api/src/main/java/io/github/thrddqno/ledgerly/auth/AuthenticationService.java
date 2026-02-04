@@ -12,7 +12,6 @@ import io.github.thrddqno.ledgerly.common.security.JwtService;
 import io.github.thrddqno.ledgerly.user.Role;
 import io.github.thrddqno.ledgerly.user.User;
 import io.github.thrddqno.ledgerly.user.UserRepository;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @Service
