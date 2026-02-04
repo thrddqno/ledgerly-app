@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import io.github.thrddqno.ledgerly.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,9 +20,13 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 	
-	@Value("${SECRET_KEY}") String secret;
+	@Value("${spring.security.jwt.secret}") String secret;
 	
 	public String extractEmail(String token) {
+		return extractClaim(token, claim -> claim.get("email", String.class));
+	}
+	
+	public String extractUserId(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 	
@@ -36,22 +41,26 @@ public class JwtService {
 
 	private Key getSigningKey() {
 		byte[] keyByte = Decoders.BASE64.decode(secret);
+		System.out.println(secret);
 		return Keys.hmacShaKeyFor(keyByte);
 	}
 	
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+	public String generateToken(Map<String, Object> extraClaims, User user) {
+		extraClaims.put("email", user.getEmail());
+	    extraClaims.put("role", user.getRole());
+	    
 		return Jwts
 				.builder()
 				.setClaims(extraClaims)
-				.setSubject(userDetails.getUsername())
+				.setSubject(user.getId().toString())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+				.setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
 				.signWith(getSigningKey(), SignatureAlgorithm.HS256)
 				.compact();
 	}
 	
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
+	public String generateToken(User user) {
+		return generateToken(new HashMap<>(), user);
 	}
 	
 	public boolean isTokenValid(String token, UserDetails userDetails) {
