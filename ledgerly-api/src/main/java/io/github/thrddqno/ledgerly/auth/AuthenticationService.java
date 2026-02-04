@@ -12,6 +12,7 @@ import io.github.thrddqno.ledgerly.common.security.JwtService;
 import io.github.thrddqno.ledgerly.user.Role;
 import io.github.thrddqno.ledgerly.user.User;
 import io.github.thrddqno.ledgerly.user.UserRepository;
+import io.github.thrddqno.ledgerly.user.exceptions.EmailAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,7 +28,9 @@ public class AuthenticationService {
 	private final AuthenticationManager authenticationManager;
 	
 	public AuthenticationResponse register(RegisterRequest request) {
-		System.out.println(request);
+		if (repository.findByEmail(request.getEmail()).isPresent()) {
+		    throw new EmailAlreadyExistsException("Email is already registered");
+		}
 		var user = User.builder()
 				.firstName(request.getFirstName())
 				.lastName(request.getLastName())
