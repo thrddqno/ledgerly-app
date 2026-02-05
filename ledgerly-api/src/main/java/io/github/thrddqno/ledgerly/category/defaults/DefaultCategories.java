@@ -38,6 +38,10 @@ public class DefaultCategories {
 			new DefaultCategoryTemplate(CategoryIcon.SHOPPING, "#E36AEF", "Shopping", TransactionType.EXPENSE),
 			new DefaultCategoryTemplate(CategoryIcon.GAME, "#67686C", "Sports & Hobbies", TransactionType.EXPENSE),
 			new DefaultCategoryTemplate(CategoryIcon.PLANE, "#F964A0", "Travel", TransactionType.EXPENSE),
-			new DefaultCategoryTemplate(CategoryIcon.CASH, "#67686C", "Work", TransactionType.EXPENSE)
+			new DefaultCategoryTemplate(CategoryIcon.CASH, "#67686C", "Work", TransactionType.EXPENSE),
+			
+			//TRANSFERS
+			new DefaultCategoryTemplate(CategoryIcon.TRANSFER, "#F5534B", "Outgoing Transfer", TransactionType.EXPENSE),
+			new DefaultCategoryTemplate(CategoryIcon.TRANSFER, "#18B272", "Incoming Transfer", TransactionType.INCOME)
 			);
 }
