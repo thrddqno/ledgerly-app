@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.thrddqno.ledgerly.category.dto.CategoryDTO;
+import io.github.thrddqno.ledgerly.category.dto.CategoryRequest;
 import io.github.thrddqno.ledgerly.category.dto.MergeRequest;
 import io.github.thrddqno.ledgerly.transaction.TransactionType;
 import io.github.thrddqno.ledgerly.user.User;
@@ -33,7 +33,7 @@ public class CategoryController {
 
 	//get categories
 	@GetMapping
-	public ResponseEntity<List<CategoryDTO>> getCategories(@AuthenticationPrincipal User user, @RequestParam(required = false) TransactionType type){
+	public ResponseEntity<List<CategoryRequest>> getCategories(@AuthenticationPrincipal User user, @RequestParam(required = false) TransactionType type){
 		if (type == null) {
 	        return ResponseEntity.ok(categoryService.getAllCategories(user));
 	    }
@@ -42,7 +42,7 @@ public class CategoryController {
 	
 	// get a single category by id
 	@GetMapping("/{id}")
-	public ResponseEntity<CategoryDTO> getCategory(@AuthenticationPrincipal User user, @PathVariable Integer id){
+	public ResponseEntity<CategoryRequest> getCategory(@AuthenticationPrincipal User user, @PathVariable Integer id){
 		return ResponseEntity.ok(categoryService.getCategoryById(user, id));
 	}
 	
@@ -52,13 +52,13 @@ public class CategoryController {
 	
 	// create category
 	@PostMapping
-	public ResponseEntity<CategoryDTO> createCategory(@AuthenticationPrincipal User user, @RequestBody CategoryDTO categoryDTO){
+	public ResponseEntity<CategoryRequest> createCategory(@AuthenticationPrincipal User user, @RequestBody CategoryRequest categoryDTO){
 		return ResponseEntity.ok(categoryService.createCategory(user, categoryDTO));
 	}
 	
 	// merge list of category to one category
 	@PostMapping("/merge")
-	public ResponseEntity<CategoryDTO> mergeCategoriesToCategory(@AuthenticationPrincipal User user, @RequestBody MergeRequest request){
+	public ResponseEntity<CategoryRequest> mergeCategoriesToCategory(@AuthenticationPrincipal User user, @RequestBody MergeRequest request){
 		return ResponseEntity.ok(categoryService.mergeCategories(user, request.mergingCategoryIds(), request.finalCategoryId()));
 	}
 	
@@ -68,7 +68,7 @@ public class CategoryController {
 	
 	//ipdate an existing category
 	@PutMapping("/{id}")
-	public ResponseEntity<CategoryDTO> updateCategory(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody CategoryDTO categoryDTO){
+	public ResponseEntity<CategoryRequest> updateCategory(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody CategoryRequest categoryDTO){
 		return ResponseEntity.ok(categoryService.updateCategory(user, id, categoryDTO));
 	}
 	

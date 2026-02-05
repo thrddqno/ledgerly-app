@@ -1,6 +1,6 @@
 package io.github.thrddqno.ledgerly.wallet.dto;
 
-public record WalletDTO(
+public record WalletRequest(
 		String name,
 		double startingBalance,
 		String currencyCode

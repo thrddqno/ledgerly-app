@@ -6,7 +6,7 @@ import io.github.thrddqno.ledgerly.category.CategoryIcon;
 import io.github.thrddqno.ledgerly.transaction.TransactionType;
 import jakarta.validation.constraints.Pattern;
 
-public record CategoryDTO(
+public record CategoryRequest(
 		@JsonFormat(shape = JsonFormat.Shape.STRING) CategoryIcon icon,
 		@Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message="Invalid hex color") String color,
 		String name,

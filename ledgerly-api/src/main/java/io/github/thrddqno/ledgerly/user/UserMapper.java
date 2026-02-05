@@ -2,11 +2,11 @@ package io.github.thrddqno.ledgerly.user;
 
 import org.mapstruct.Mapper;
 
-import io.github.thrddqno.ledgerly.user.dto.UserDTO;
+import io.github.thrddqno.ledgerly.user.dto.UserRequest;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 	
-	UserDTO toDTO(User user);
+	UserRequest toDTO(User user);
 
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import io.github.thrddqno.ledgerly.common.security.SecurityUtils;
 import io.github.thrddqno.ledgerly.user.dto.PasswordRequest;
-import io.github.thrddqno.ledgerly.user.dto.UserDTO;
+import io.github.thrddqno.ledgerly.user.dto.UserRequest;
 import io.github.thrddqno.ledgerly.user.exceptions.InvalidUserDataException;
 import io.github.thrddqno.ledgerly.user.exceptions.OldPasswordIncorrectException;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,12 @@ public class UserService {
 	private UserMapper mapper;
 	
 	//get userbyid
-	public UserDTO getUser() {
-		User user = SecurityUtils.currentUser();
+	public UserRequest getUser(User user) {
 		return mapper.toDTO(user);
 	}
 	
 	//put userdetails
-	public UserDTO updateDetails(UserDTO userDTO) throws InvalidUserDataException{
-		User user = SecurityUtils.currentUser();
+	public UserRequest updateDetails(User user, UserRequest userDTO) throws InvalidUserDataException{
 		
 		user.setFirstName(userDTO.firstName());
 		user.setLastName(userDTO.lastName());
@@ -39,8 +37,7 @@ public class UserService {
 	}
 	
 	//put userpassword
-	public void updatePassword(PasswordRequest request) {
-		User user = SecurityUtils.currentUser();
+	public void updatePassword(User user, PasswordRequest request) {
 		
 		if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
 	        throw new OldPasswordIncorrectException("Old password is incorrect");

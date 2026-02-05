@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import io.github.thrddqno.ledgerly.category.dto.CategoryDTO;
+import io.github.thrddqno.ledgerly.category.dto.CategoryRequest;
 import io.github.thrddqno.ledgerly.transaction.TransactionRepository;
 import io.github.thrddqno.ledgerly.transaction.TransactionType;
 import io.github.thrddqno.ledgerly.user.User;
@@ -27,19 +27,19 @@ public class CategoryService {
 	 */
 	
 	// getAllByUser
-	public List<CategoryDTO> getAllCategories(User user){
+	public List<CategoryRequest> getAllCategories(User user){
 		List<Category> categories = categoryRepository.findByUser(user);
 		return categories.stream().map(categoryMapper::toDTO).toList();
  	}
 	
 	// all categories for user of a specific type
-	public List<CategoryDTO> getCategoriesByType(User user, TransactionType type){
+	public List<CategoryRequest> getCategoriesByType(User user, TransactionType type){
 		List<Category> categories = categoryRepository.findByUserAndType(user, type);
 		return categories.stream().map(categoryMapper::toDTO).toList();
 	}
 	
 	// get by id
-	public CategoryDTO getCategoryById(User user, Integer categoryId) {
+	public CategoryRequest getCategoryById(User user, Integer categoryId) {
 		return categoryMapper.toDTO(categoryRepository.findByUserAndId(user, categoryId).orElseThrow());
 	}
 	
@@ -47,7 +47,7 @@ public class CategoryService {
 	 * POST METHODS FOR CATEGORIES
 	 */
 
-	public CategoryDTO createCategory(User user, CategoryDTO categoryDTO) {
+	public CategoryRequest createCategory(User user, CategoryRequest categoryDTO) {
 		Category category = Category.builder()
 				.color(categoryDTO.color())
 				.icon(categoryDTO.icon())
@@ -63,7 +63,7 @@ public class CategoryService {
 	 * PUT METHODS FOR CATEGORIES
 	 */
 	
-	public CategoryDTO updateCategory(User user, Integer categoryId, CategoryDTO categoryDTO) {
+	public CategoryRequest updateCategory(User user, Integer categoryId, CategoryRequest categoryDTO) {
 		Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow();
 		
 		category.setColor(categoryDTO.color());
@@ -76,7 +76,7 @@ public class CategoryService {
 	
 	//mergeCategories and set final category merged
 	@Transactional
-	public CategoryDTO mergeCategories(User user, List<Integer> mergingCategoryIds, Integer finalCategoryId) {
+	public CategoryRequest mergeCategories(User user, List<Integer> mergingCategoryIds, Integer finalCategoryId) {
 		//fetch final category
 		Category finalCategory = categoryRepository.findByUserAndId(user, finalCategoryId).orElseThrow();
 	

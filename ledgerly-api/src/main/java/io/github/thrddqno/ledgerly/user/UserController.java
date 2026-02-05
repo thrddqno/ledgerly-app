@@ -1,15 +1,15 @@
 package io.github.thrddqno.ledgerly.user;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.thrddqno.ledgerly.user.dto.PasswordRequest;
-import io.github.thrddqno.ledgerly.user.dto.UserDTO;
+import io.github.thrddqno.ledgerly.user.dto.UserRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,21 +20,20 @@ public class UserController {
 	private final UserService service;
 	
 	@GetMapping
-	public ResponseEntity<UserDTO> getUser(){
-		UserDTO userDTO = service.getUser();
+	public ResponseEntity<UserRequest> getUser(@AuthenticationPrincipal User user){
+		UserRequest userDTO = service.getUser(user);
 		return ResponseEntity.ok(userDTO);
 	}
 	
 	@PutMapping("/details")
-	public ResponseEntity<UserDTO> updateDetails(@RequestBody UserDTO userDTO){
-		UserDTO updated = service.updateDetails(userDTO);
+	public ResponseEntity<UserRequest> updateDetails(@AuthenticationPrincipal User user, @RequestBody UserRequest userDTO){
+		UserRequest updated = service.updateDetails(user, userDTO);
 		return ResponseEntity.ok(updated);
 	}
 	
 	@PutMapping("/password")
-	public ResponseEntity<String> updatePassword(@RequestBody PasswordRequest passwordRequest){
-		service.updatePassword(passwordRequest);
+	public ResponseEntity<String> updatePassword(@AuthenticationPrincipal User user, @RequestBody PasswordRequest passwordRequest){
+		service.updatePassword(user, passwordRequest);
 		return ResponseEntity.ok("Password updated successfully");
 	}
-
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import io.github.thrddqno.ledgerly.common.security.SecurityUtils;
 import io.github.thrddqno.ledgerly.user.User;
-import io.github.thrddqno.ledgerly.wallet.dto.WalletDTO;
+import io.github.thrddqno.ledgerly.wallet.dto.WalletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,20 +19,20 @@ public class WalletService {
 	private final WalletMapper walletMapper;
 
 	//getallwallet
-	public List<WalletDTO> getAllWallet() {
+	public List<WalletRequest> getAllWallet() {
 		User user = SecurityUtils.currentUser();
 		List<Wallet> wallets = walletRepository.findByUser(user).orElseThrow();
 		return wallets.stream().map(walletMapper::toDTO).toList();
 	}
 	
 	//getwallet
-	public WalletDTO getWalletByPublicId(UUID publicId) {
+	public WalletRequest getWalletByPublicId(UUID publicId) {
 		Wallet wallet = getOwnedWallet(publicId);
-		return new WalletDTO(wallet.getName(), wallet.getStartingBalance(), wallet.getCurrencyCode());
+		return new WalletRequest(wallet.getName(), wallet.getStartingBalance(), wallet.getCurrencyCode());
 	}
 	
 	//create wallet
-	public WalletDTO createWallet(WalletDTO walletDTO) {
+	public WalletRequest createWallet(WalletRequest walletDTO) {
 		User user = SecurityUtils.currentUser();
 		
 		Wallet wallet = Wallet.builder()
@@ -46,7 +46,7 @@ public class WalletService {
 	}
 	
 	//update wallet
-	public WalletDTO updateWallet(UUID publicId, WalletDTO walletDTO) {
+	public WalletRequest updateWallet(UUID publicId, WalletRequest walletDTO) {
 		Wallet wallet = getOwnedWallet(publicId);
 		
 		wallet.setName(walletDTO.name());

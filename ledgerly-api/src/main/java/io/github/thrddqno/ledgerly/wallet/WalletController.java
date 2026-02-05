@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.thrddqno.ledgerly.wallet.dto.WalletDTO;
+import io.github.thrddqno.ledgerly.wallet.dto.WalletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,17 +23,17 @@ public class WalletController {
 	private final WalletService walletService;
 	
 	@GetMapping
-	public ResponseEntity<List<WalletDTO>> getAllWallet(){
+	public ResponseEntity<List<WalletRequest>> getAllWallet(){
 		return ResponseEntity.ok(walletService.getAllWallet());
 	}
 	
 	@GetMapping("/{publicId}")
-	public ResponseEntity<WalletDTO> getWallet(@PathVariable UUID publicId){
+	public ResponseEntity<WalletRequest> getWallet(@PathVariable UUID publicId){
 		return ResponseEntity.ok(walletService.getWalletByPublicId(publicId));
 	}
 	
 	@PostMapping("/create")
-	public ResponseEntity<WalletDTO> createWallet(@RequestBody WalletDTO walletDTO){
+	public ResponseEntity<WalletRequest> createWallet(@RequestBody WalletRequest walletDTO){
 		return ResponseEntity.ok(walletService.createWallet(walletDTO));
 	}
 	
@@ -44,7 +44,7 @@ public class WalletController {
 	}
 	
 	@PutMapping("/edit/{publicId}")
-	public ResponseEntity<WalletDTO> updateWallet(@PathVariable UUID publicId, @RequestBody WalletDTO walletDTO){
+	public ResponseEntity<WalletRequest> updateWallet(@PathVariable UUID publicId, @RequestBody WalletRequest walletDTO){
 		return ResponseEntity.ok(walletService.updateWallet(publicId, walletDTO));
 	}
 	
