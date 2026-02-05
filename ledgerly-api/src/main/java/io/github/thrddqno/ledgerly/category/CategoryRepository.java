@@ -19,6 +19,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer>{
 	// specific category for a user
 	Optional<Category> findByUserAndId(User user, Integer id);
 	
+	Optional<Category> findByUserAndName(User user, String name);
+	
 	//ownership checker
 	boolean existsByIdAndUser(Integer id, User user);
 }

@@ -31,7 +31,8 @@ public enum CategoryIcon {
 	BANK("landmark"),
 	CASH_BAG("sack-dollar"),
 	QUESTION_MARK("circle-question"),
-	CART("cart-shopping");
+	CART("cart-shopping"),
+	TRANSFER("right-left");
 	
 	private final String cssClass;
 }
