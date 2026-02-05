@@ -3,10 +3,8 @@ package io.github.thrddqno.ledgerly.wallet;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import io.github.thrddqno.ledgerly.common.security.SecurityUtils;
 import io.github.thrddqno.ledgerly.user.User;
 import io.github.thrddqno.ledgerly.wallet.dto.WalletRequest;
 import lombok.RequiredArgsConstructor;

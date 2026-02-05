@@ -1,7 +1,6 @@
 package io.github.thrddqno.ledgerly.wallet;
 
 import java.time.LocalDateTime;
-import java.util.Currency;
 import java.util.List;
 import java.util.UUID;
 
