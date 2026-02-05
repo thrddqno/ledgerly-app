@@ -19,21 +19,19 @@ public class WalletService {
 	private final WalletMapper walletMapper;
 
 	//getallwallet
-	public List<WalletRequest> getAllWallet() {
-		User user = SecurityUtils.currentUser();
+	public List<WalletRequest> getAllWallet(User user) {
 		List<Wallet> wallets = walletRepository.findByUser(user).orElseThrow();
 		return wallets.stream().map(walletMapper::toDTO).toList();
 	}
 	
 	//getwallet
-	public WalletRequest getWalletByPublicId(UUID publicId) {
-		Wallet wallet = getOwnedWallet(publicId);
+	public WalletRequest getWalletByPublicId(User user, UUID publicId) {
+		Wallet wallet = walletRepository.findByUserAndPublicId(user, publicId).orElseThrow();
 		return new WalletRequest(wallet.getName(), wallet.getStartingBalance(), wallet.getCurrencyCode());
 	}
 	
 	//create wallet
-	public WalletRequest createWallet(WalletRequest walletDTO) {
-		User user = SecurityUtils.currentUser();
+	public WalletRequest createWallet(User user, WalletRequest walletDTO) {
 		
 		Wallet wallet = Wallet.builder()
 				.name(walletDTO.name())
@@ -46,8 +44,8 @@ public class WalletService {
 	}
 	
 	//update wallet
-	public WalletRequest updateWallet(UUID publicId, WalletRequest walletDTO) {
-		Wallet wallet = getOwnedWallet(publicId);
+	public WalletRequest updateWallet(User user, UUID publicId, WalletRequest walletDTO) {
+		Wallet wallet = walletRepository.findByUserAndPublicId(user, publicId).orElseThrow();
 		
 		wallet.setName(walletDTO.name());
 		wallet.setStartingBalance(walletDTO.startingBalance());
@@ -58,18 +56,9 @@ public class WalletService {
 	}
 	
 	//delete wallet
-	public void deleteWallet(UUID publicId) {
-		Wallet wallet = getOwnedWallet(publicId);
+	public void deleteWallet(User user, UUID publicId) {
+		Wallet wallet = walletRepository.findByUserAndPublicId(user, publicId).orElseThrow();
 		walletRepository.delete(wallet);
-	}
-	
-	private Wallet getOwnedWallet(UUID publicId) {
-	    User user = SecurityUtils.currentUser();
-	    Wallet wallet = walletRepository.findByPublicId(publicId).orElseThrow();
-	    if (!wallet.getUser().getId().equals(user.getId())) {
-	        throw new AccessDeniedException("Forbidden");
-	    }
-	    return wallet;
 	}
 
 
