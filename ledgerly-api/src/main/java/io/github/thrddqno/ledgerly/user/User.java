@@ -48,9 +48,6 @@ public class User implements UserDetails{
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
-	
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-	private List<Wallet> wallets;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
