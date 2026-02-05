@@ -1,5 +1,6 @@
 package io.github.thrddqno.ledgerly.transaction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +9,8 @@ import io.github.thrddqno.ledgerly.category.Category;
 import io.github.thrddqno.ledgerly.wallet.Wallet;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,21 +33,24 @@ public class Transaction {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@ManyToOne
+	@JoinColumn(name="category_id")
+	private Category category;
+	
 	private double amount;
 	
-	private String type;
+	@Enumerated(EnumType.STRING)
+	private TransactionType type;
 	
 	private String note;
 	
-	private LocalDateTime transactionDate;
+	private LocalDate transactionDate;
 	
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
 	
-	@ManyToOne
-	@JoinColumn(name="category_id")
-	private Category category;
+
 	
 	@ManyToOne
 	@JoinColumn(name="wallet_id")
