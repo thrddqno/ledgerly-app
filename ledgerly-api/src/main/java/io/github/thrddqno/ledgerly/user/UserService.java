@@ -1,6 +1,5 @@
 package io.github.thrddqno.ledgerly.user;
 
-import org.mapstruct.factory.Mappers;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	
-	private UserMapper mapper = Mappers.getMapper(UserMapper.class);
+	private UserMapper mapper;
 	
 	//get userbyid
 	public UserDTO getUser() {
