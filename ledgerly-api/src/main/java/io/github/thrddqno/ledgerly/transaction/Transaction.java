@@ -2,6 +2,7 @@ package io.github.thrddqno.ledgerly.transaction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -16,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +34,16 @@ public class Transaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
+	@Column(nullable = false, unique = true, updatable = false)
+	private UUID publicId;
+	
+	private UUID transferId;
+	
+	@PrePersist
+    void generatePublicId() {
+        this.publicId = UUID.randomUUID();
+    }
 	
 	@ManyToOne
 	@JoinColumn(name="category_id")
@@ -50,9 +62,11 @@ public class Transaction {
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
 	
-
-	
 	@ManyToOne
 	@JoinColumn(name="wallet_id")
-	private Wallet wallet;
+	private Wallet sourceWallet; //from
+	
+	@ManyToOne
+	@JoinColumn(name="destination_wallet_id")
+	private Wallet destinationWallet; //to
 }

@@ -65,7 +65,7 @@ public class Wallet {
 	@JoinColumn(name="user_id")
 	private User user;
 	
-	@OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "sourceWallet", cascade = CascadeType.ALL)
 	private List<Transaction> transactions;
 
 	
