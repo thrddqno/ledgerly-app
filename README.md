@@ -49,7 +49,9 @@ A relational database (PostgreSQL) was used to enforce data integrity and accura
 ## 🔴 Live Demo
 Check out the live demo on this site: _🚧 Work in Progress (WIP)_
 
-## 💻 Development
+## 💻 Development Setup
+<details>
+
 ### Prerequisites
 Before running the code, ensure the machine has these global dependencies installed:
 - **Java Development Kit (JDK) 21+:** Required to run the Spring Boot backend.
@@ -96,6 +98,7 @@ npm install
 ```bash
 npm start
 ```
+</details>
 
 ## 🗺️ Roadmap
 _Roadmap may change according to alignment_
@@ -138,5 +141,6 @@ Distributed under the Apache-2.0 license. See [`LICENSE.txt`](https://github.com
 [license-url]: https://github.com/thrddqno/ledgerly-app/blob/main/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/thrddqno
+
 
 
