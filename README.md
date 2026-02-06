@@ -41,8 +41,7 @@
 ### 🧰 The Techstack
 - **The Backend (Spring Boot):** I chose Spring Boot to understand how enterprise-grade APIs are structured. I implemented JWT-based authentication to handle security properly and followed a strict service-oriented architecture to keep the business logic separated from the API endpoints.
   
-- **The Frontend (React):** The focus here was functionality over flash. I prioritized clean API calls and predictable state management, making sure the UI accurately reflects the backend state without lag or errors.
-A relational database (PostgreSQL) was used to enforce data integrity and accurately model relationships between users, wallets, transactions, categories, and budgets. Care was taken to handle cascading effects explicitly—for example, how deleting or merging categories impacts existing transactions—mirroring real product constraints instead of ignoring edge cases.
+- **The Frontend (React):** _Not yet implemented_
 
 - **Data Reliability (PostgreSQL):** I didn't want to just "store" data; I wanted to enforce it. I used a relational model to handle the complex links between wallets and transactions, ensuring that if a category changes or a wallet is closed, the math still adds up.
 
