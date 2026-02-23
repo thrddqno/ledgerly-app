@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: ledgerly
-  jpa:
-    show-sql: true
-  profiles:
-    active: dev
