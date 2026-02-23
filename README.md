@@ -2,36 +2,15 @@
   <div align="center">
       <!-- Mockup Image -->
   </div>
-  <h1 align="center">Ledgerly: Personal Finance Tracker</h1>
+
+  <h1 align="center">Ledgerly Legacy (v1)</h1>
 
   <p align="center">
-   <b>A full-stack personal finance tracker as part of my learner's project series.</b>
+   <b>This branch contains Ledgerly v1, the original implementation of a personal finance tracker.
+It is preserved for reference and historical purposes. All new development should happen on the main branch (Ledgerly V2).</b>
   </p>
-  
-  <p align="center">
-  <a href="https://spring.io/projects/spring-boot">
-    <img src="https://img.shields.io/badge/backend-springboot-brightgreen?logo=springboot"
-         alt="springboot">
-  </a>
-  <a href="https://spring.io/projects/spring-boot">
-    <img src="https://img.shields.io/badge/frontend-react_with_vite-purple?logo=vite"
-         alt="springboot">
-  </a>
-  <a href="https://www.linkedin.com/in/thrddqno/">
-    <img src="https://img.shields.io/badge/connect-LinkedIn-blue">
-  </a>
-</p>
-  <h4>
-    <a href="#-about">About</a>
-    •
-    <a href="#-live-demo">Demo</a>
-    •
-    <a href="#️-roadmap">Roadmap</a>
-    •
-    <a href="#-license">License</a>
-</h4>
 
-<h6>🚧 Work in Progress (WIP)</h6>
+<h6>⚠️ LEGACY CODE! ⚠️</h6>
 </div>
 
 
@@ -44,9 +23,6 @@
 - **The Frontend (React):** _Not yet implemented_
 
 - **Data Reliability (PostgreSQL):** I didn't want to just "store" data; I wanted to enforce it. I used a relational model to handle the complex links between wallets and transactions, ensuring that if a category changes or a wallet is closed, the math still adds up.
-
-## 🔴 Live Demo
-Check out the live demo on this site: _🚧 Work in Progress (WIP)_
 
 ## 💻 Development Setup
 <details>
@@ -98,31 +74,6 @@ npm install
 npm start
 ```
 </details>
-
-## 🗺️ Roadmap
-_Roadmap may change according to alignment_
-<!-- Add Roadmap -->
-### Phase 1 - Core Stability
-- [x] User authentication and JWT-based authorization
-- [x] Wallet, transaction, category, and budget management
-- [x] Explicit merge and delete workflows for categories
-- [ ] Pagination and filtering for transaction queries
-- [ ] Consistent API error responses and validation messages
-### Phase 2 - Product Depth
-- [ ] Budget analytics (monthly summaries, category breakdowns)
-- [ ] Transaction search by date range and amount
-- [ ] Soft deletes for critical entities
-- [ ] Audit logging for destructive operations
-### Phase 3 - Scale & Maintainability
-- [ ] Role-based access control
-- [ ] Rate limiting and request throttling
-- [ ] Caching for read-heavy endpoints
-- [ ] API versioning strategy
-### Phase 4 – DevOps & Deployment
-- [ ] Dockerized development and production builds
-- [ ] CI pipeline with automated tests
-- [ ] Environment-based configuration
-- [ ] Cloud deployment (AWS / GCP / Railway)
 
 ## 🏦 License
 
