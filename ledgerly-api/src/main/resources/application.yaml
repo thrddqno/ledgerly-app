@@ -1,3 +1,7 @@
 spring:
   application:
     name: ledgerly-api
+  jpa:
+    show-sql: true
+  profiles:
+    active: dev
