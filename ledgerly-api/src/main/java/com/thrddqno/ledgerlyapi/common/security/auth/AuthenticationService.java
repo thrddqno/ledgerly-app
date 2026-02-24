@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class AuthenticationService {
                             loginRequest.getPassword()
                     )
             );
-        } catch (InvalidCredentialsException e) {
+        } catch (BadCredentialsException e) {
             throw new InvalidCredentialsException(
                     "Your email or password is incorrect",
                     "BAD_USER_INPUT",
