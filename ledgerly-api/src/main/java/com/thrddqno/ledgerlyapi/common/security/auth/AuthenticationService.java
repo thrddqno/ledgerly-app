@@ -4,10 +4,14 @@ import com.thrddqno.ledgerlyapi.common.security.JwtService;
 import com.thrddqno.ledgerlyapi.common.security.auth.dto.AuthenticationResponse;
 import com.thrddqno.ledgerlyapi.common.security.auth.dto.LoginRequest;
 import com.thrddqno.ledgerlyapi.common.security.auth.dto.RegisterRequest;
+import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.EmailAlreadyExistException;
+import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.InvalidCredentialsException;
+import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.UserNotFoundException;
 import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,10 +26,12 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public AuthenticationResponse register(RegisterRequest registerRequest) throws Exception {
-        //TODO: implement EmailAlreadyExist exception and remove method signature
+    public AuthenticationResponse register(RegisterRequest registerRequest) {
         if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
-            throw new Exception();
+            throw new EmailAlreadyExistException(
+                    "Email: " + registerRequest.getEmail() + " already exists.",
+                    "BAD_USER_INPUT",
+                    HttpStatus.BAD_REQUEST);
         }
 
         var user = User.builder()
@@ -41,8 +47,7 @@ public class AuthenticationService {
     }
 
     @Transactional
-    public AuthenticationResponse login(LoginRequest loginRequest) throws Exception {
-        //TODO: implement InvalidCredentials exception and remove method signature
+    public AuthenticationResponse login(LoginRequest loginRequest){
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -50,12 +55,20 @@ public class AuthenticationService {
                             loginRequest.getPassword()
                     )
             );
-        } catch (Exception e) {
-            throw new Exception();
+        } catch (InvalidCredentialsException e) {
+            throw new InvalidCredentialsException(
+                    "Your email or password is incorrect",
+                    "BAD_USER_INPUT",
+                    HttpStatus.UNAUTHORIZED
+            );
         }
 
-        //TODO: implement UserNotFound exception
-        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->
+                new UserNotFoundException(
+                        "User with email: " + loginRequest.getEmail() + " cannot be found.",
+                        "BAD_USER_INPUT",
+                        HttpStatus.NOT_FOUND
+                ));
         var token = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(token).build();
     }
