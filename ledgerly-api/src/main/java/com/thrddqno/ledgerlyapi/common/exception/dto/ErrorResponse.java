@@ -1,4 +1,4 @@
-package com.thrddqno.ledgerlyapi.common.exceptions.dto;
+package com.thrddqno.ledgerlyapi.common.exception.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

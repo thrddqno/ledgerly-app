@@ -1,9 +1,9 @@
-package com.thrddqno.ledgerlyapi.common.exceptions;
+package com.thrddqno.ledgerlyapi.common.exception;
 
-import com.thrddqno.ledgerlyapi.common.exceptions.dto.ErrorResponse;
-import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.EmailAlreadyExistException;
-import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.InvalidCredentialsException;
-import com.thrddqno.ledgerlyapi.common.security.auth.exceptions.UserNotFoundException;
+import com.thrddqno.ledgerlyapi.common.exception.dto.ErrorResponse;
+import com.thrddqno.ledgerlyapi.common.security.auth.exception.EmailAlreadyExistException;
+import com.thrddqno.ledgerlyapi.common.security.auth.exception.InvalidCredentialsException;
+import com.thrddqno.ledgerlyapi.common.security.auth.exception.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
