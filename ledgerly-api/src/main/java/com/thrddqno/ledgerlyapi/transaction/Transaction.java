@@ -1,5 +1,6 @@
 package com.thrddqno.ledgerlyapi.transaction;
 
+import com.thrddqno.ledgerlyapi.category.Category;
 import com.thrddqno.ledgerlyapi.wallet.Wallet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -38,7 +39,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
-    //TODO: add category
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "wallet_id")

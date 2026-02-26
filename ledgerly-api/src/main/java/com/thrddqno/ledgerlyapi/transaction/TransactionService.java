@@ -1,5 +1,7 @@
 package com.thrddqno.ledgerlyapi.transaction;
 
+import com.thrddqno.ledgerlyapi.category.Category;
+import com.thrddqno.ledgerlyapi.category.CategoryRepository;
 import com.thrddqno.ledgerlyapi.transaction.dto.PagedTransactionResponse;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionRequest;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionResponse;
@@ -12,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -22,6 +23,7 @@ public class TransactionService {
     private final WalletRepository walletRepository;
     private final TransactionRepository transactionRepository;
     private final TransactionMapper transactionMapper;
+    private final CategoryRepository categoryRepository;
 
     /**
      * GET METHODS
@@ -50,13 +52,14 @@ public class TransactionService {
     public TransactionResponse createTransaction(User user, UUID walletId, TransactionRequest request){
         //TODO: add resourcenotfound exception handling
         Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow();
 
         Transaction transaction = Transaction.builder()
                 .notes(request.notes())
-                .amount(request.amount())
+                .amount(request.amount().abs())
                 .date(request.date())
-                //TODO: ADD CATEGORY THEN DERIVE TRANSACTION TYPE FROM CATEGORY
-                .transactionType(((request.amount().compareTo(BigDecimal.ZERO) < 0 ? TransactionType.EXPENSE : TransactionType.INCOME))) //get from category for now
+                .category(category)
+                .transactionType(category.getTransactionType()) //get from category for now
                 .wallet(wallet)
                 .build();
         wallet.applyTransaction(transaction);
@@ -73,13 +76,16 @@ public class TransactionService {
     public TransactionResponse updateTransaction(User user, UUID walletId, UUID transactionId, TransactionRequest request){
         Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
         Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow();
+
         //redo balance
         wallet.removeTransaction(transaction);
 
         transaction.setNotes(request.notes());
-        transaction.setAmount(request.amount());
+        transaction.setAmount(request.amount().abs());
         transaction.setDate(request.date());
-        transaction.setTransactionType(request.amount().compareTo(BigDecimal.ZERO) < 0 ? TransactionType.EXPENSE : TransactionType.INCOME);
+        transaction.setCategory(category);
+        transaction.setTransactionType(category.getTransactionType());
 
         wallet.applyTransaction(transaction);
         transactionRepository.save(transaction);
