@@ -1,5 +1,7 @@
 package com.thrddqno.ledgerlyapi.wallet;
 
+import com.thrddqno.ledgerlyapi.transaction.Transaction;
+import com.thrddqno.ledgerlyapi.transaction.TransactionType;
 import com.thrddqno.ledgerlyapi.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -48,6 +50,28 @@ public class Wallet {
 
     public BigDecimal getCurrentBalance(){
         return startingBalance.add(cachedTransactions);
+    }
+
+
+
+
+    public void applyTransaction(Transaction transaction){
+        BigDecimal amount = transaction.getAmount().abs();
+
+        BigDecimal delta = (transaction.getTransactionType() == TransactionType.EXPENSE) ? amount.negate() : amount;
+
+        this.cachedTransactions = this.cachedTransactions.add(delta);
+
+    }
+
+    public void removeTransaction(Transaction transaction){
+        BigDecimal amount = transaction.getAmount().abs();
+
+        BigDecimal delta = (transaction.getTransactionType() == TransactionType.EXPENSE)
+                ? amount
+                : amount.negate();
+
+        this.cachedTransactions = this.cachedTransactions.add(delta);
     }
 
 }
