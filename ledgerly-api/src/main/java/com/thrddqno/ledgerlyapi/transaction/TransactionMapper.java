@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
 
+    @Mapping(target = "walletId", source = "wallet.id")
     TransactionResponse toTransactionResponse(Transaction transaction);
 
     @Mapping(target = "data", source = "content")
