@@ -1,6 +1,10 @@
-package com.thrddqno.ledgerlyapi.wallet;
+package com.thrddqno.ledgerlyapi;
 
 import com.thrddqno.ledgerlyapi.user.User;
+import com.thrddqno.ledgerlyapi.wallet.Wallet;
+import com.thrddqno.ledgerlyapi.wallet.WalletMapper;
+import com.thrddqno.ledgerlyapi.wallet.WalletRepository;
+import com.thrddqno.ledgerlyapi.wallet.WalletService;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletRequest;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class WallerServiceTest {
+public class WalletServiceTest {
     @Mock
     private WalletRepository walletRepository;
     @Mock
@@ -33,8 +37,8 @@ public class WallerServiceTest {
 
     @BeforeEach
     void setUp() {
-        userA = User.builder().id(1).firstName("A").lastName("Test").email("userA@test.com").build();
-        userB = User.builder().id(2).firstName("B").lastName("Test").email("userB@test.com").build();
+        userA = User.builder().id(UUID.randomUUID()).firstName("A").lastName("Test").email("userA@test.com").build();
+        userB = User.builder().id(UUID.randomUUID()).firstName("B").lastName("Test").email("userB@test.com").build();
     }
 
     @Test
