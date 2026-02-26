@@ -1,5 +1,6 @@
 package com.thrddqno.ledgerlyapi.common.security.auth;
 
+import com.thrddqno.ledgerlyapi.category.CategorySeederService;
 import com.thrddqno.ledgerlyapi.common.security.JwtService;
 import com.thrddqno.ledgerlyapi.common.security.auth.dto.AuthenticationResponse;
 import com.thrddqno.ledgerlyapi.common.security.auth.dto.LoginRequest;
@@ -25,6 +26,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final CategorySeederService categorySeederService;
 
     @Transactional
     public AuthenticationResponse register(RegisterRequest registerRequest) {
@@ -43,6 +45,7 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
+        categorySeederService.seedDefaultCategories(user);
         var token = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(token).build();
     }
