@@ -11,6 +11,7 @@ public interface TransactionMapper {
 
     @Mapping(target = "walletId", source = "wallet.id")
     @Mapping(target = "categoryResponse", source = "category")
+    @Mapping(target = "relatedTransactionId", expression = "java(transaction.getRelatedTransaction() != null ? transaction.getRelatedTransaction().getId() : null)")
     TransactionResponse toTransactionResponse(Transaction transaction);
 
     @Mapping(target = "data", source = "content")
