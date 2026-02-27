@@ -75,8 +75,10 @@ public class WalletService {
         return walletMapper.toWalletDetailsResponse(wallet);
     }
 
+    @Transactional
     public void deleteWallet(User user, UUID walletId){
         Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        transactionRepository.deleteAllByWallet(wallet);
         walletRepository.delete(wallet);
     }
 

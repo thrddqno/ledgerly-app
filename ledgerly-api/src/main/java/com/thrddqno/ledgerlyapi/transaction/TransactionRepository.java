@@ -1,7 +1,6 @@
 package com.thrddqno.ledgerlyapi.transaction;
 
 import com.thrddqno.ledgerlyapi.category.Category;
-import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.wallet.Wallet;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -35,4 +34,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     void deleteByCategory(Category category);
 
+    @Modifying
+    @Query("DELETE FROM Transaction t WHERE t.wallet = :wallet")
+    void deleteAllByWallet(Wallet wallet);
 }
