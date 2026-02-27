@@ -3,14 +3,13 @@ package com.thrddqno.ledgerlyapi.common.security;
 import com.thrddqno.ledgerlyapi.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,13 +20,13 @@ public class JwtService {
     @Value("${JWT_SECRET_KEY}")
     private String SECRET_KEY;
 
-    public Key getSigningKey(){
+    public SecretKey getSigningKey(){
         byte[] keyByte = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyByte);
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+        return Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token).getPayload();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -46,19 +45,16 @@ public class JwtService {
     public String generateToken(Map<String, Object> extraClaims, User user){
         extraClaims.put("email", user.getEmail());
         extraClaims.put("role", user.getRole());
-        extraClaims.put("firstName", user.getFirstName());
-        extraClaims.put("lastName", user.getLastName());
-
         //temporarily set the exp of the token to 7 days (1 week) for development purposes.
         // TODO: implement refresh token after finalizing the backend and about to work for the front-end
         // TODO: implement OAuth 2.0 for this platform
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
-                .setSubject(user.getId().toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .claims(extraClaims)
+                .subject(user.getId().toString())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
