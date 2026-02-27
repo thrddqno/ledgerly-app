@@ -133,10 +133,11 @@ _Roadmap may change according to alignment_
 ### Phase 1 - Core Stability
 
 - [x] User authentication and JWT-based authorization
-- [ ] Wallet, transaction, category domains
-- [ ] Merge and delete for categories
-- [ ] Keyset Pagination and filtering for transaction queries
+- [x] Wallet, transaction, category domains
+- [x] Merge and delete for categories
+- [x] Wallet-to-wallet transactions
 - [ ] Consistent API error responses and validation messages
+- [ ] Keyset Pagination and filtering for transaction queries
 
 ## 🏦 License
 
