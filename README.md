@@ -136,8 +136,24 @@ _Roadmap may change according to alignment_
 - [x] Wallet, transaction, category domains
 - [x] Merge and delete for categories
 - [x] Wallet-to-wallet transactions
-- [ ] Consistent API error responses and validation messages
-- [ ] Keyset Pagination and filtering for transaction queries
+- [x] Consistent API error responses and validation messages
+- [x] Keyset Pagination and filtering for transaction queries
+- [ ] Refresh Tokens
+- [ ] Set HttpOnly cookie for JWT readying for front-end impl
+
+### Phase 2 - UI & UX
+- [ ] Design UI using [Figma](https://www.figma.com/proto/wp8dR6lr0DHMHQpFpndSlr/Ledgerly-App?node-id=2-2&t=YqoDwgmjpVDJX7No-1)
+- **Front-end implementation**
+  - [ ] Build the React frontend to fully consume the backend APIs.
+  - [ ] Responsive UI for desktop and mobile.
+  - [ ] Form validations and user-friendly error handling.
+  - [ ] Theme selection (light/dark mode).
+- **Reporting & Analytics**
+  - [ ] Dashboard for transaction summaries, charts, and trends. 
+  - [ ] Monthly/weekly summaries by category or wallet. 
+  - [ ] Export reports as CSV or PDF.
+- **User Settings & Personalization**
+  - [ ] Profile management (name, email, password change) _means i will have token invalidation thingy idk_
 
 ## 🏦 License
 
