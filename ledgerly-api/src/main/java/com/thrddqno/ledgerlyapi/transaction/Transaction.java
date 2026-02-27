@@ -64,7 +64,7 @@ public class Transaction {
      */
 
     @OneToOne
-    @JoinColumn(name = "related_transaction_id", nullable = true)
+    @JoinColumn(name = "related_transaction_id")
     private Transaction relatedTransaction;
 
     private boolean isIncoming;
