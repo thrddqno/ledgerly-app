@@ -62,7 +62,7 @@ public class WalletService {
                 .user(user)
                 .build();
 
-        walletRepository.save(wallet);
+        walletRepository.saveAndFlush(wallet);
 
         return walletMapper.toWalletDetailsResponse(wallet);
     }
