@@ -34,3 +34,4 @@ build/
 
 ### Application Profiles ###
 application-dev.yaml
+qodana.yaml
