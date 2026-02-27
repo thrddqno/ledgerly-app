@@ -1,5 +1,6 @@
 package com.thrddqno.ledgerlyapi.wallet;
 
+import com.thrddqno.ledgerlyapi.transaction.TransactionRepository;
 import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletDetailsResponse;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletRequest;
@@ -19,6 +20,7 @@ public class WalletService {
     private final WalletMapper walletMapper;
 
     private static final int MAX_WALLETS_PER_USER = 10;
+    private final TransactionRepository transactionRepository;
 
     //get wallet
     public WalletResponse getWalletBalance(User user, UUID walletId){
