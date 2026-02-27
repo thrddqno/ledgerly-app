@@ -1,11 +1,14 @@
 package com.thrddqno.ledgerlyapi.category;
 
 import com.thrddqno.ledgerlyapi.category.dto.*;
+import com.thrddqno.ledgerlyapi.common.exception.BusinessValidationException;
+import com.thrddqno.ledgerlyapi.common.exception.ResourceNotFoundException;
 import com.thrddqno.ledgerlyapi.transaction.TransactionRepository;
 import com.thrddqno.ledgerlyapi.transaction.TransactionType;
 import com.thrddqno.ledgerlyapi.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,26 +30,34 @@ public class CategoryService {
     private static final int MAX_EXPENSES_CATEGORY_PER_USER = 30;
     private final TransactionRepository transactionRepository;
 
-
-
     private void validateCategoryLimit(User user, TransactionType transactionType){
         long count = categoryRepository.countByUserAndTransactionType(user, transactionType);
         int limit = (transactionType == TransactionType.INCOME) ? MAX_INCOME_CATEGORY_PER_USER : MAX_EXPENSES_CATEGORY_PER_USER;
         if (count >= limit){
-            //TODO: CREATE EXCEPTION
-            throw new IllegalArgumentException("Maximum " + transactionType + " categories reached.");
+            throw new BusinessValidationException(
+                    "Maximum " + transactionType + " categories reached.",
+                    "CATEGORY_LIMIT_REACHED",
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
     private void validateTransactionType(Category category, Category target){
         if (category.getTransactionType() != target.getTransactionType()){
-            throw new IllegalArgumentException("Mismatched Transaction Types: Source is " + category.getTransactionType() + "  but Target is " + target.getTransactionType());
+            throw new BusinessValidationException(
+                    "Source is " + category.getTransactionType() + "  but Target is " + target.getTransactionType(),
+                    "TRANSACTION_TYPE_MISMATCH",
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
     private void validateNotTransfer(TransactionType type) {
         if (type == TransactionType.TRANSFER) {
-            throw new IllegalArgumentException("Operation not allowed for Transfer type categories.");
+            throw new BusinessValidationException(
+                    "Operation not allowed for Transfer type categories.",
+                    "INVALID_CATEGORY_OPERATION",
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
@@ -79,7 +90,13 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse getCategory(User user, UUID categoryId){
-        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
         return categoryMapper.toCategoryResponse(category);
     }
 
@@ -88,8 +105,8 @@ public class CategoryService {
      */
     @Transactional
     public CategoryResponse createCategory(User user, CategoryRequest request){
-        validateNotTransfer(request.transactionType());
 
+        validateNotTransfer(request.transactionType());
         validateCategoryLimit(user,request.transactionType());
 
         Category category = Category.builder()
@@ -106,7 +123,13 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse updateCategory(User user, UUID categoryId, UpdateCategoryRequest request){
-        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
 
         validateNotTransfer(category.getTransactionType());
 
@@ -120,11 +143,26 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse mergeCategories(User user, MergeCategoriesRequest request){
-        Category finalCategory = categoryRepository.findByUserAndId(user, request.finalCategoryId()).orElseThrow();
+        Category finalCategory = categoryRepository.findByUserAndId(user, request.finalCategoryId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
 
         validateNotTransfer(finalCategory.getTransactionType());
 
         List<Category> mergingCategories = categoryRepository.findAllByUserAndIdIn(user, request.mergingCategoryIds());
+
+        if (mergingCategories.size() != request.mergingCategoryIds().size()){
+            throw new ResourceNotFoundException(
+                    "One or more categories could not be found",
+                    "RESOURCE_NOT_FOUND",
+                    HttpStatus.NOT_FOUND
+            );
+        }
+
         mergingCategories.removeIf(c -> c.getId().equals(finalCategory.getId()));
         mergingCategories.forEach(source -> validateNotTransfer(source.getTransactionType()));
         mergingCategories.forEach(source -> validateTransactionType(source, finalCategory));
@@ -137,7 +175,11 @@ public class CategoryService {
     
     @Transactional
     public void deleteCategory(User user, UUID categoryId){
-        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow( () -> new ResourceNotFoundException(
+                "Category could not be found",
+                "RESOURCE_NOT_FOUND",
+                HttpStatus.NOT_FOUND
+        ));
         validateNotTransfer(category.getTransactionType());
         //CRUCIAL: CASCADE usually fails, delete all category if user insists migration to other categories won't be necessary/
         transactionRepository.deleteByCategory(category);
@@ -150,8 +192,20 @@ public class CategoryService {
      */
     @Transactional
     public void deleteCategory(User user, UUID categoryId, UUID targetCategoryId){
-        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow();
-        Category target = categoryRepository.findByUserAndId(user, targetCategoryId).orElseThrow();
+        Category category = categoryRepository.findByUserAndId(user, categoryId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Source Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
+        Category target = categoryRepository.findByUserAndId(user, targetCategoryId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Target Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
 
         validateNotTransfer(category.getTransactionType());
         validateNotTransfer(target.getTransactionType());

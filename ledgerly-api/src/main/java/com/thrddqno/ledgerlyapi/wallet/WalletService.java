@@ -1,5 +1,7 @@
 package com.thrddqno.ledgerlyapi.wallet;
 
+import com.thrddqno.ledgerlyapi.common.exception.BusinessValidationException;
+import com.thrddqno.ledgerlyapi.common.exception.ResourceNotFoundException;
 import com.thrddqno.ledgerlyapi.transaction.TransactionRepository;
 import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletDetailsResponse;
@@ -7,6 +9,7 @@ import com.thrddqno.ledgerlyapi.wallet.dto.WalletRequest;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +27,12 @@ public class WalletService {
 
     //get wallet
     public WalletResponse getWalletBalance(User user, UUID walletId){
-        //TODO: resourcenotfoundexception
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
         return walletMapper.toWalletResponse(wallet);
     }
 
@@ -37,8 +44,12 @@ public class WalletService {
 
     //get wallet details
     public WalletDetailsResponse getWalletDetails(User user, UUID walletId){
-        //TODO: resourcenotfoundexception
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
         return walletMapper.toWalletDetailsResponse(wallet);
     }
 
@@ -54,7 +65,11 @@ public class WalletService {
 
         long walletCount = walletRepository.countByUser(user);
         if (walletCount >= MAX_WALLETS_PER_USER){
-            throw new IllegalStateException("User cannot create more than 10 wallets");
+            throw new BusinessValidationException(
+                    "Maximum amount if categories reached. Count: " + walletCount,
+                    "WALLET_LIMIT_REACHED",
+                    HttpStatus.BAD_REQUEST
+            );
         }
         Wallet wallet = Wallet.builder()
                 .name(request.name())
@@ -63,12 +78,16 @@ public class WalletService {
                 .build();
 
         walletRepository.saveAndFlush(wallet);
-
         return walletMapper.toWalletDetailsResponse(wallet);
     }
 
     public WalletDetailsResponse updateWallet(User user, UUID walletId, WalletRequest request){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
         wallet.setName(request.name());
         wallet.setStartingBalance(request.startingBalance());
@@ -79,7 +98,12 @@ public class WalletService {
 
     @Transactional
     public void deleteWallet(User user, UUID walletId){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
         transactionRepository.deleteAllByWallet(wallet);
         walletRepository.delete(wallet);
     }

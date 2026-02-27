@@ -2,6 +2,10 @@ package com.thrddqno.ledgerlyapi.transaction;
 
 import com.thrddqno.ledgerlyapi.category.Category;
 import com.thrddqno.ledgerlyapi.category.CategoryRepository;
+import com.thrddqno.ledgerlyapi.common.exception.BusinessValidationException;
+import com.thrddqno.ledgerlyapi.common.exception.DataIntegrityException;
+import com.thrddqno.ledgerlyapi.common.exception.ResourceNotFoundException;
+import com.thrddqno.ledgerlyapi.common.exception.UnauthorizedException;
 import com.thrddqno.ledgerlyapi.transaction.dto.PagedTransactionResponse;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionRequest;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionResponse;
@@ -13,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,16 +39,32 @@ public class TransactionService {
     //GET TRANSACTION
     @Transactional
     public TransactionResponse getTransaction(User user, UUID walletId, UUID transactionId){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
-        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                ));
+        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Transaction could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                ));
         return transactionMapper.toTransactionResponse(transaction);
     }
 
     @Transactional
     public PagedTransactionResponse<TransactionResponse> getAllTransactions(User user, UUID walletId, int page, int size){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
         PageRequest pageRequest = PageRequest.of(page - 1, size);
         Page<Transaction> transactionResponsePage = transactionRepository.findAllByWallet(wallet, pageRequest);
+
         return transactionMapper.toPagedResponse(transactionResponsePage);
     }
 
@@ -53,15 +74,39 @@ public class TransactionService {
 
     @Transactional
     public List<TransactionResponse> createTransfer(User user, TransferRequest request){
-        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow();
-        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow();
+        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Source Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Target Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
         if (source.getId().equals(target.getId())){
-            throw new IllegalArgumentException("Cannot transfer funds to the same wallet");
+            throw new BusinessValidationException(
+                    "Cannot transfer funds to the same wallet",
+                    "INVALID_TRANSFER_REQUEST",
+                    HttpStatus.BAD_REQUEST
+            );
         }
 
-        Category OutTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Outgoing Transfer", TransactionType.TRANSFER).orElseThrow();
-        Category InTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Incoming Transfer", TransactionType.TRANSFER).orElseThrow();
+        Category OutTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Outgoing Transfer", TransactionType.TRANSFER).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Category InTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Incoming Transfer", TransactionType.TRANSFER).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
         UUID transferId = UUID.randomUUID();
 
@@ -103,16 +148,25 @@ public class TransactionService {
 
     @Transactional
     public TransactionResponse createTransaction(User user, UUID walletId, TransactionRequest request){
-        //TODO: add resourcenotfound exception handling
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
-        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
         Transaction transaction = Transaction.builder()
                 .notes(request.notes())
                 .amount(request.amount().abs())
                 .date(request.date())
                 .category(category)
-                .transactionType(category.getTransactionType()) //get from category for now
+                .transactionType(category.getTransactionType())
                 .wallet(wallet)
                 .build();
         wallet.applyTransaction(transaction);
@@ -124,21 +178,35 @@ public class TransactionService {
 
     @Transactional
     public List<TransactionResponse> updateTransfer(User user, UUID transferId, TransferRequest request){
-        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow();
-        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow();
+        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Source Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Target Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
-        List<Transaction> transfers = transactionRepository.findByTransferId(transferId);
+        List<Transaction> transfers = getAndValidateTransfer(user,transferId);
 
-        if(transfers.stream().allMatch(transaction -> transaction.getWallet().getUser() == user)){
-            throw new IllegalArgumentException("Unauthorized: Transfer does not belong to user");
-        }
-
-        if (transfers.size() != 2) {
-            throw new IllegalStateException("Transfer is incomplete or corrupted");
-        }
-
-        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow();
-        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow();
+        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow(
+                () -> new DataIntegrityException(
+                        "Transfer is corrupted: missing outgoing transaction",
+                        "DATA_INTEGRITY_VIOLATION",
+                        HttpStatus.CONFLICT
+                )
+        );
+        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow(
+                () -> new DataIntegrityException(
+                        "Transfer is corrupted: missing incoming transaction",
+                        "DATA_INTEGRITY_VIOLATION",
+                        HttpStatus.CONFLICT
+                )
+        );
 
         outgoing.getWallet().removeTransfer(outgoing);
         incoming.getWallet().removeTransfer(incoming);
@@ -168,9 +236,24 @@ public class TransactionService {
      */
     @Transactional
     public TransactionResponse updateTransaction(User user, UUID walletId, UUID transactionId, TransactionRequest request){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
-        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow();
-        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Transaction could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
+        Category category = categoryRepository.findByUserAndId(user, request.categoryId()).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Category could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
         //redo balance
         wallet.removeTransaction(transaction);
@@ -185,7 +268,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
         walletRepository.save(wallet);
 
-        return  transactionMapper.toTransactionResponse(transaction);
+        return transactionMapper.toTransactionResponse(transaction);
     }
 
     /**
@@ -194,9 +277,19 @@ public class TransactionService {
 
     @Transactional
     public void deleteTransaction(User user, UUID walletId, UUID transactionId){
-        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow();
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
 
-        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow();
+        Transaction transaction = transactionRepository.findByWalletAndId(wallet, transactionId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Transaction could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND)
+        );
         wallet.removeTransaction(transaction);
         walletRepository.save(wallet);
         transactionRepository.delete(transaction);
@@ -204,18 +297,22 @@ public class TransactionService {
 
     @Transactional
     public void deleteTransfer(User user, UUID transferId){
-        List<Transaction> transfers = transactionRepository.findByTransferId(transferId);
+        List<Transaction> transfers = getAndValidateTransfer(user, transferId);
 
-        if(transfers.stream().allMatch(transaction -> transaction.getWallet().getUser() == user)){
-            throw new IllegalArgumentException("Unauthorized: Transfer does not belong to user");
-        }
-
-        if (transfers.size() != 2) {
-            throw new IllegalStateException("Transfer is incomplete or corrupted");
-        }
-
-        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow();
-        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow();
+        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow(
+                () -> new DataIntegrityException(
+                        "Transfer is corrupted: missing outgoing transaction",
+                        "DATA_INTEGRITY_VIOLATION",
+                        HttpStatus.CONFLICT
+                )
+        );
+        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow(
+                () -> new DataIntegrityException(
+                        "Transfer is corrupted: missing incoming transaction",
+                        "DATA_INTEGRITY_VIOLATION",
+                        HttpStatus.CONFLICT
+                )
+        );
 
         outgoing.getWallet().removeTransfer(outgoing);
         incoming.getWallet().removeTransfer(incoming);
@@ -223,6 +320,34 @@ public class TransactionService {
         walletRepository.saveAll(List.of(outgoing.getWallet(), incoming.getWallet()));
 
         transactionRepository.deleteAll(transfers);
+    }
 
+    private List<Transaction> getAndValidateTransfer(User user, UUID transferId){
+        List<Transaction> transfers = transactionRepository.findByTransferId(transferId);
+
+        if(transfers.isEmpty()){
+            throw new ResourceNotFoundException(
+                    "Wallet could not be found",
+                    "RESOURCE_NOT_FOUND",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        if(transfers.stream().anyMatch(transaction -> !transaction.getWallet().getUser().getId().equals(user.getId()))){
+            throw new UnauthorizedException(
+                    "User is not authorized to access this transaction",
+                    "UNAUTHORIZED_ACCESS",
+                    HttpStatus.FORBIDDEN
+            );
+        }
+
+        if (transfers.size() != 2) {
+            throw new DataIntegrityException(
+                    "Transfer is incomplete or corrupted. Expected 2 transactions, but only received " + transfers.size(),
+                    "DATA_INTEGRITY_VIOLATION",
+                    HttpStatus.CONFLICT
+            );
+        }
+
+        return transfers;
     }
 }
