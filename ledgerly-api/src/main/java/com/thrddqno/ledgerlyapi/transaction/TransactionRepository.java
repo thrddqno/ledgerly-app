@@ -37,4 +37,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     @Modifying
     @Query("DELETE FROM Transaction t WHERE t.wallet = :wallet")
     void deleteAllByWallet(Wallet wallet);
+
+    List<Transaction> findByTransferId(UUID transferId);
 }

@@ -5,6 +5,7 @@ import com.thrddqno.ledgerlyapi.category.CategoryRepository;
 import com.thrddqno.ledgerlyapi.transaction.dto.PagedTransactionResponse;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionRequest;
 import com.thrddqno.ledgerlyapi.transaction.dto.TransactionResponse;
+import com.thrddqno.ledgerlyapi.transaction.dto.TransferRequest;
 import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.wallet.Wallet;
 import com.thrddqno.ledgerlyapi.wallet.WalletRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -48,6 +50,57 @@ public class TransactionService {
     /**
      * POST METHODS
      */
+
+    @Transactional
+    public List<TransactionResponse> createTransfer(User user, TransferRequest request){
+        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow();
+        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow();
+
+        if (source.getId().equals(target.getId())){
+            throw new IllegalArgumentException("Cannot transfer funds to the same wallet");
+        }
+
+        Category OutTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Outgoing Transfer", TransactionType.TRANSFER).orElseThrow();
+        Category InTransferCategory = categoryRepository.findByUserAndNameAndTransactionType(user, "Incoming Transfer", TransactionType.TRANSFER).orElseThrow();
+
+        UUID transferId = UUID.randomUUID();
+
+        //from source
+        Transaction outgoing = Transaction.builder()
+                .notes("Transfer to " + target.getName())
+                .amount(request.amount())
+                .date(request.date())
+                .transactionType(TransactionType.TRANSFER)
+                .category(OutTransferCategory)
+                .wallet(source)
+                .transferId(transferId)
+                .isIncoming(false)
+                .build();
+        //to target
+        Transaction incoming = Transaction.builder()
+                .notes("Transfer from " + source.getName())
+                .amount(request.amount())
+                .date(request.date())
+                .transactionType(TransactionType.TRANSFER)
+                .category(InTransferCategory)
+                .wallet(target)
+                .transferId(transferId)
+                .isIncoming(true)
+                .build();
+
+        outgoing.setRelatedTransaction(incoming);
+        incoming.setRelatedTransaction(outgoing);
+
+        source.applyTransfer(outgoing);
+        target.applyTransfer(incoming);
+
+        walletRepository.saveAll(List.of(source,target));
+
+        List<Transaction> saved = transactionRepository.saveAll(List.of(outgoing, incoming));
+
+        return saved.stream().map(transactionMapper::toTransactionResponse).toList();
+    }
+
     @Transactional
     public TransactionResponse createTransaction(User user, UUID walletId, TransactionRequest request){
         //TODO: add resourcenotfound exception handling
@@ -67,6 +120,47 @@ public class TransactionService {
         walletRepository.save(wallet);
 
         return transactionMapper.toTransactionResponse(transaction);
+    }
+
+    @Transactional
+    public List<TransactionResponse> updateTransfer(User user, UUID transferId, TransferRequest request){
+        Wallet source = walletRepository.findByUserAndId(user, request.sourceWalletId()).orElseThrow();
+        Wallet target = walletRepository.findByUserAndId(user, request.targetWalletId()).orElseThrow();
+
+        List<Transaction> transfers = transactionRepository.findByTransferId(transferId);
+
+        if(transfers.stream().allMatch(transaction -> transaction.getWallet().getUser() == user)){
+            throw new IllegalArgumentException("Unauthorized: Transfer does not belong to user");
+        }
+
+        if (transfers.size() != 2) {
+            throw new IllegalStateException("Transfer is incomplete or corrupted");
+        }
+
+        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow();
+        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow();
+
+        outgoing.getWallet().removeTransfer(outgoing);
+        incoming.getWallet().removeTransfer(incoming);
+
+        outgoing.setAmount(request.amount());
+        outgoing.setDate(request.date());
+        outgoing.setNotes("Transfer to " + target.getName());
+        outgoing.setWallet(source);
+
+        incoming.setAmount(request.amount());
+        incoming.setDate(request.date());
+        incoming.setNotes("Transfer from " + source.getName());
+        incoming.setWallet(target);
+
+        source.applyTransfer(outgoing);
+        target.applyTransfer(incoming);
+
+        walletRepository.saveAll(List.of(source,target));
+
+        List<Transaction> saved = transactionRepository.saveAll(List.of(outgoing, incoming));
+
+        return saved.stream().map(transactionMapper::toTransactionResponse).toList();
     }
 
     /**
@@ -106,5 +200,29 @@ public class TransactionService {
         wallet.removeTransaction(transaction);
         walletRepository.save(wallet);
         transactionRepository.delete(transaction);
+    }
+
+    @Transactional
+    public void deleteTransfer(User user, UUID transferId){
+        List<Transaction> transfers = transactionRepository.findByTransferId(transferId);
+
+        if(transfers.stream().allMatch(transaction -> transaction.getWallet().getUser() == user)){
+            throw new IllegalArgumentException("Unauthorized: Transfer does not belong to user");
+        }
+
+        if (transfers.size() != 2) {
+            throw new IllegalStateException("Transfer is incomplete or corrupted");
+        }
+
+        Transaction outgoing = transfers.stream().filter(transaction -> !transaction.isIncoming()).findFirst().orElseThrow();
+        Transaction incoming = transfers.stream().filter(Transaction::isIncoming).findFirst().orElseThrow();
+
+        outgoing.getWallet().removeTransfer(outgoing);
+        incoming.getWallet().removeTransfer(incoming);
+
+        walletRepository.saveAll(List.of(outgoing.getWallet(), incoming.getWallet()));
+
+        transactionRepository.deleteAll(transfers);
+
     }
 }

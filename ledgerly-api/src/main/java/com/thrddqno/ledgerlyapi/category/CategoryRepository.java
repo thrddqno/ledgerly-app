@@ -18,6 +18,8 @@ public interface CategoryRepository extends JpaRepository<Category, UUID> {
 
     boolean existsByUser(User user);
 
+    Optional<Category> findByUserAndNameAndTransactionType(User user, String name, TransactionType transactionType);
+
     long countByUserAndTransactionType(User user, TransactionType transactionType);
 
     List<Category> findAllByUser(User user);

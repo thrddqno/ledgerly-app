@@ -52,16 +52,28 @@ public class Wallet {
         return startingBalance.add(cachedTransactions);
     }
 
-
-
-
     public void applyTransaction(Transaction transaction){
         BigDecimal amount = transaction.getAmount().abs();
 
         BigDecimal delta = (transaction.getTransactionType() == TransactionType.EXPENSE) ? amount.negate() : amount;
 
         this.cachedTransactions = this.cachedTransactions.add(delta);
+    }
 
+    public void applyTransfer(Transaction transfer){
+        BigDecimal amount = transfer.getAmount().abs();
+
+        BigDecimal delta = (!transfer.isIncoming() ? amount.negate() : amount);
+
+        this.cachedTransactions = this.cachedTransactions.add(delta);
+    }
+
+    public void removeTransfer(Transaction transfer){
+        BigDecimal amount = transfer.getAmount().abs();
+
+        BigDecimal delta = (!transfer.isIncoming() ? amount : amount.negate());
+
+        this.cachedTransactions = this.cachedTransactions.add(delta);
     }
 
     public void removeTransaction(Transaction transaction){

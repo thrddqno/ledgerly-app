@@ -42,7 +42,7 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
@@ -65,13 +65,7 @@ public class Transaction {
     @JoinColumn(name = "related_transaction_id", nullable = true)
     private Transaction relatedTransaction;
 
-    public boolean isOutgoingTransfer(UUID walletId) {
-        return isTransfer() && !wallet.getId().equals(walletId);
-    }
-
-    public boolean isIncomingTransfer(UUID walletId) {
-        return isTransfer() && wallet.getId().equals(walletId);
-    }
+    private boolean isIncoming;
 
     public boolean isTransfer(){
         return this.transferId != null;
