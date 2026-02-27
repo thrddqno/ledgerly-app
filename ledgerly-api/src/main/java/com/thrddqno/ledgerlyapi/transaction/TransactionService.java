@@ -6,10 +6,7 @@ import com.thrddqno.ledgerlyapi.common.exception.BusinessValidationException;
 import com.thrddqno.ledgerlyapi.common.exception.DataIntegrityException;
 import com.thrddqno.ledgerlyapi.common.exception.ResourceNotFoundException;
 import com.thrddqno.ledgerlyapi.common.exception.UnauthorizedException;
-import com.thrddqno.ledgerlyapi.transaction.dto.PagedTransactionResponse;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransactionRequest;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransactionResponse;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransferRequest;
+import com.thrddqno.ledgerlyapi.transaction.dto.*;
 import com.thrddqno.ledgerlyapi.user.User;
 import com.thrddqno.ledgerlyapi.wallet.Wallet;
 import com.thrddqno.ledgerlyapi.wallet.WalletRepository;
@@ -17,9 +14,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,8 +34,50 @@ public class TransactionService {
     private final CategoryRepository categoryRepository;
 
     /**
-     * GET METHODS
+     * KEYSET PAGINATION (EXPERIMENT)
+     * resource: https://www.youtube.com/watch?v=MOu-5B-UpCU
      */
+    @Transactional
+    public CursorPagedTransactionResponse<TransactionResponse> getNextTransactions(
+            User user,
+            UUID walletId,
+            String cursor,
+            LocalDate startDate,
+            LocalDate endDate,
+            int size
+    ) {
+        Wallet wallet = walletRepository.findByUserAndId(user, walletId).orElseThrow(
+                () -> new ResourceNotFoundException(
+                        "Wallet could not be found",
+                        "RESOURCE_NOT_FOUND",
+                        HttpStatus.NOT_FOUND
+                )
+        );
+
+        LocalDate lastDate = null;
+        UUID lastId = null;
+        if (cursor != null && !cursor.isBlank()) {
+            String decoded = new String(Base64.getUrlDecoder().decode(cursor), StandardCharsets.UTF_8);
+            String[] parts = decoded.split("\\|");
+            if (parts.length != 2){
+                throw new BusinessValidationException(
+                        "Invalid Cursor",
+                        "INVALID_CURSOR",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+            lastDate = LocalDate.parse(parts[0]);
+            lastId = UUID.fromString(parts[1]);
+        }
+
+
+        Pageable limit = PageRequest.of(0, size);
+        List<Transaction> transactions = transactionRepository.findTransactionsByWallet(
+                wallet, startDate, endDate, lastDate, lastId, limit);
+
+        return transactionMapper.toCursorPagedTransactionResponse(transactions, size);
+    }
+
 
     //GET TRANSACTION
     @Transactional

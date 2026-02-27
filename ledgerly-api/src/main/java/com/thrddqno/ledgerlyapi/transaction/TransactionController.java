@@ -1,15 +1,14 @@
 package com.thrddqno.ledgerlyapi.transaction;
 
-import com.thrddqno.ledgerlyapi.transaction.dto.PagedTransactionResponse;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransactionRequest;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransactionResponse;
-import com.thrddqno.ledgerlyapi.transaction.dto.TransferRequest;
+import com.thrddqno.ledgerlyapi.transaction.dto.*;
 import com.thrddqno.ledgerlyapi.user.User;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +18,21 @@ import java.util.UUID;
 public class TransactionController {
 
     private final TransactionService transactionService;
+
+    /**
+     * KEYSET PAGINATION with DATE FILTER
+     */
+    @GetMapping("/{walletId}/keyset")
+    public ResponseEntity<CursorPagedTransactionResponse<TransactionResponse>> getNextTransactionsWithDateFilter(
+            @AuthenticationPrincipal User user,
+            @PathVariable UUID walletId,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "20") @Min(1) int size) {
+        CursorPagedTransactionResponse<TransactionResponse> response = transactionService.getNextTransactions(user, walletId, cursor, startDate, endDate, size);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{walletId}/{transactionId}")
     public ResponseEntity<TransactionResponse> getTransaction(
