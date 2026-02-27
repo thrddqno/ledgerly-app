@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,8 +42,8 @@ public class Transaction {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
-    @JoinColumn(name = "wallet_id")
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;
 
     @CreationTimestamp
@@ -63,9 +62,21 @@ public class Transaction {
      */
 
     @OneToOne
-    @JoinColumn(name = "related_transaction_id")
+    @JoinColumn(name = "related_transaction_id", nullable = true)
     private Transaction relatedTransaction;
 
-    private boolean isTransfer;
+    public boolean isOutgoingTransfer(UUID walletId) {
+        return isTransfer() && !wallet.getId().equals(walletId);
+    }
+
+    public boolean isIncomingTransfer(UUID walletId) {
+        return isTransfer() && wallet.getId().equals(walletId);
+    }
+
+    public boolean isTransfer(){
+        return this.transferId != null;
+    }
+
+
 
 }
