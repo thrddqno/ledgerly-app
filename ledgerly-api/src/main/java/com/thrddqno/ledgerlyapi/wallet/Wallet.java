@@ -45,9 +45,6 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    //TODO: add transaction relations for wallets
-    //eg. List<Transactions> transactions mapped with transactions...
-
     public BigDecimal getCurrentBalance(){
         return startingBalance.add(cachedTransactions);
     }

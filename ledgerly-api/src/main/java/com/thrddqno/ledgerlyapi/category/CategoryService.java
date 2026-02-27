@@ -19,10 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    /**
-     * TODO: CREATE EXCEPTIONS FOR CATEGORIES
-     */
-
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
