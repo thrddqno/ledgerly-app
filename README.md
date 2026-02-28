@@ -60,6 +60,94 @@ Check out the live demo on this site: _🚧 Work in Progress (WIP)_
 
 <details>
 
+<details>
+<summary>Running using <code>docker-compose.yml</code></summary>
+
+### Prerequisites
+- Install [Docker](https://www.docker.com/get-started) (Engine + Compose)
+- Install Git
+
+#### 1. Clone the repository
+
+
+```bash
+git clone https://github.com/thrddqno/ledgerly-app.git
+
+cd ledgerly-app
+```
+
+#### 2. Configure `docker-compose.yml`
+
+Here is what you should change in the `docker-compose.yml`
+
+**2.1 DB Service**
+
+```yaml
+  db:
+    image: postgres:latest
+    container_name: ledgerly-db
+    environment:
+      POSTGRES_USER: #SET USERNAME HERE
+      POSTGRES_PASSWORD: #SET PASSWORD HERE
+      POSTGRES_DB: ledgerly
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/
+```
+
+**2.2 Backend Service**
+
+```YAML
+  backend:
+    build:
+      context: ./ledgerly-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ledgerly
+      - SPRING_DATASOURCE_USERNAME= # POSTGRES USERNAME
+      - SPRING_DATASOURCE_PASSWORD= # POSTGRES PASSWORD
+      - JWT_SECRET_KEY="" # INSERT A BASE64 256-BIT RANDOM GENERATED KEY HERE
+```
+
+_front-end services not yet implemented, test using postman and find endpoints using swagger_
+
+### 3. Start services
+
+```bash
+docker compose up -d
+```
+
+### 4. Verify containers
+Should list 'backend' and 'db' containers running
+```bash
+docker ps
+```
+
+### 5. View logs
+
+```bash
+docker compose logs -f backend
+
+docker compose logs -f db
+```
+
+### 6. Stop services
+Stops and removes containers, networks, but volumes remain
+
+```json
+docker compose down
+```
+___
+
+</details>
+
+
+<details>
+<summary>Running using <code>mvnw</code></summary>
+
 ### Prerequisites
 
 Before running the code, ensure the machine has these global dependencies installed:
@@ -122,7 +210,7 @@ npm install
 ```bash
 npm start
 ```
-
+</details>
 </details>
 
 ## 🗺️ Roadmap
