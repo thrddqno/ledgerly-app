@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: ledgerly-db
+    environment:
+      POSTGRES_USER:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB:
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/
+  backend:
+    build:
+      context: ./ledgerly-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ledgerly
+      - SPRING_DATASOURCE_USERNAME=
+      - SPRING_DATASOURCE_PASSWORD=
+      - JWT_SECRET_KEY=""
+volumes:
+  db-data: {}
