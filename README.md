@@ -138,8 +138,8 @@ _Roadmap may change according to alignment_
 - [x] Wallet-to-wallet transactions
 - [x] Consistent API error responses and validation messages
 - [x] Keyset Pagination and filtering for transaction queries
-- [ ] Refresh Tokens
-- [ ] Set HttpOnly cookie for JWT readying for front-end impl
+- [x] Refresh Tokens
+- [x] Set HttpOnly cookie for JWT readying for front-end impl
 
 ### Phase 2 - UI & UX
 - [ ] Design UI using [Figma](https://www.figma.com/proto/wp8dR6lr0DHMHQpFpndSlr/Ledgerly-App?node-id=2-2&t=YqoDwgmjpVDJX7No-1)
