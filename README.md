@@ -137,7 +137,7 @@ docker compose logs -f db
 ### 6. Stop services
 Stops and removes containers, networks, but volumes remain
 
-```json
+```bash
 docker compose down
 ```
 ___
