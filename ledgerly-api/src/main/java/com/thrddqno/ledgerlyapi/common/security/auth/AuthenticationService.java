@@ -45,7 +45,7 @@ public class AuthenticationService {
     public User register(RegisterRequest registerRequest) {
         if(userRepository.findByEmail(registerRequest.getEmail()).isPresent()){
             throw new EmailAlreadyExistException(
-                    "Email: " + registerRequest.getEmail() + " already exists.",
+                    "Email already exists.",
                     "BAD_USER_INPUT",
                     HttpStatus.BAD_REQUEST);
         }
@@ -62,7 +62,6 @@ public class AuthenticationService {
         return user;
     }
 
-    @Transactional
     public User login(LoginRequest loginRequest){
         try {
             authenticationManager.authenticate(
@@ -71,7 +70,7 @@ public class AuthenticationService {
                             loginRequest.getPassword()
                     )
             );
-        } catch (BadCredentialsException e) {
+        } catch (Exception e) {
             throw new InvalidCredentialsException(
                     "Your email or password is incorrect",
                     "BAD_USER_INPUT",
@@ -92,28 +91,11 @@ public class AuthenticationService {
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response){
+        String refreshToken = extractRefreshTokenOrThrow(request);
+        RefreshToken stored = findStoredTokenOrThrow(refreshToken);
 
-        String refreshToken = jwtTokenCookieService.extractRefreshToken(request);
-
-        if (refreshToken == null) {
-            throw new InvalidCredentialsException(
-                    "Missing refresh token: Login",
-                    "UNAUTHORIZED",
-                    HttpStatus.UNAUTHORIZED
-            );
-        }
-
-        String hashed = hash(refreshToken);
-        RefreshToken stored = refreshTokenRepository.findByTokenHash(hashed).orElseThrow(() ->
-                new ResourceNotFoundException(
-                        "Token not found: Login again",
-                        "TOKEN_NOT_FOUND",
-                        HttpStatus.NOT_FOUND
-                ));
         refreshTokenRepository.delete(stored);
-
-        response.addCookie(jwtTokenCookieService.nullifyTokenCookie("access_token", "/"));
-        response.addCookie(jwtTokenCookieService.nullifyTokenCookie("refresh_token", "/auth"));
+        clearCookies(response);
     }
 
     public void issueTokens(User user, HttpServletResponse response){
@@ -134,45 +116,47 @@ public class AuthenticationService {
 
     @Transactional
     public void refreshTokens(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = jwtTokenCookieService.extractRefreshToken(request);
-
-        if (refreshToken == null) {
-            throw new InvalidCredentialsException(
-                    "Missing refresh token: Login",
-                    "UNAUTHORIZED",
-                    HttpStatus.UNAUTHORIZED
-            );
-        }
-        String hashed = hash(refreshToken);
-
-        RefreshToken stored = refreshTokenRepository
-                .findByTokenHash(hashed)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Token not found: Login again",
-                                "TOKEN_NOT_FOUND",
-                                HttpStatus.NOT_FOUND
-                        )
-                );
+        String refreshToken = extractRefreshTokenOrThrow(request);
+        RefreshToken stored = findStoredTokenOrThrow(refreshToken);
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {
             refreshTokenRepository.delete(stored);
             throw new InvalidCredentialsException(
-                    "Refresh token expired: Login",
-                    "TOKEN_EXPIRED_UNAUTHORIZED",
-                    HttpStatus.UNAUTHORIZED
-            );
+                    "Refresh token expired. Please login again.",
+                    "TOKEN_EXPIRED",
+                    HttpStatus.UNAUTHORIZED);
         }
 
         User user = stored.getUser();
-
         refreshTokenRepository.deleteAllByUserAndExpiresAtBefore(user, Instant.now());
-
         refreshTokenRepository.delete(stored);
         issueTokens(user, response);
     }
 
-    public String hash(String token) {
+    private String extractRefreshTokenOrThrow(HttpServletRequest request) {
+        String token = jwtTokenCookieService.extractRefreshToken(request);
+        if (token == null) {
+            throw new InvalidCredentialsException("Missing refresh token. Please login.",
+                    "UNAUTHORIZED",
+                    HttpStatus.UNAUTHORIZED);
+        }
+        return token;
+    }
+
+    private RefreshToken findStoredTokenOrThrow(String rawToken) {
+        return refreshTokenRepository.findByTokenHash(hash(rawToken))
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Token not found. Please login again.",
+                        "TOKEN_NOT_FOUND",
+                        HttpStatus.NOT_FOUND));
+    }
+
+    private void clearCookies(HttpServletResponse response) {
+        response.addCookie(jwtTokenCookieService.nullifyTokenCookie("access_token", "/"));
+        response.addCookie(jwtTokenCookieService.nullifyTokenCookie("refresh_token", "/auth"));
+    }
+
+    private String hash(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashedBytes = digest.digest(token.getBytes(StandardCharsets.UTF_8));
