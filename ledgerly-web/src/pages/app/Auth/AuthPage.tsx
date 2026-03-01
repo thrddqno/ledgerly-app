@@ -1,103 +1,33 @@
-import * as React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import spending from '../../../assets/spending.svg'
 import { Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../../../context/AuthenticationContext.tsx'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-
-interface InputFieldProps {
-    label?: string
-    type?: string
-    placeholder?: string
-    value: string
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    children?: React.ReactNode
-}
-
-function InputField({
-    label,
-    type = 'text',
-    placeholder,
-    value,
-    onChange,
-    children,
-}: InputFieldProps) {
-    return (
-        <div className="mb-4">
-            <label className="mb-2 block text-xs font-medium tracking-widest text-neutral-500 uppercase">
-                {label}
-            </label>
-            <div className="relative">
-                <input
-                    type={type}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                    className="w-full rounded border border-[#555A70] px-4 py-3 text-sm text-neutral-100 placeholder-[#555A70] transition-all duration-200 outline-none focus:border-emerald-500 focus:ring-emerald-500/10"
-                />
-                {children}
-            </div>
-        </div>
-    )
-}
-
-const passwordRequirements = [
-    { label: 'At least 8 characters', test: (p: string) => p.length >= 8 },
-    { label: 'One uppercase letter', test: (p: string) => /[A-Z]/.test(p) },
-    { label: 'One number', test: (p: string) => /[0-9]/.test(p) },
-    { label: 'One special character', test: (p: string) => /[^A-Za-z0-9]/.test(p) },
-]
-
-function validatePassword(password: string) {
-    return passwordRequirements.every((req) => req.test(password))
-        ? ''
-        : 'Password does not meet requirements'
-}
+import { useAuthForm } from '../../../hooks/useAuthForm.ts'
+import { InputField } from '../../../components/auth/InputField.tsx'
+import { passwordRequirements } from '../../../utils/passwordValidation.ts'
 
 export default function AuthPage() {
-    const [mode, setMode] = useState('login')
-    const [showPass, setShowPass] = useState(false)
-    const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' })
-    const [serverError, setServerError] = useState('')
-    const { login, register, isLoading, isAuthenticated } = useAuth()
+    const { isLoading, isAuthenticated } = useAuth()
     const navigate = useNavigate()
-    const [passwordError, setPasswordError] = useState('')
+    const {
+        isLogin,
+        form,
+        showPass,
+        serverError,
+        passwordError,
+        set,
+        switchMode,
+        handleSubmit,
+        isSubmitDisabled,
+        setShowPass,
+    } = useAuthForm()
 
     useEffect(() => {
         if (!isLoading && isAuthenticated) {
             navigate('/dashboard')
         }
     }, [isAuthenticated, isLoading, navigate])
-
-    const isLogin = mode === 'login'
-    const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm((p) => ({ ...p, [key]: e.target.value }))
-        if (key === 'password' && !isLogin) {
-            setPasswordError(validatePassword(e.target.value))
-        }
-    }
-
-    async function handleSubmit(e: React.SyntheticEvent) {
-        e.preventDefault()
-        setServerError('')
-
-        try {
-            if (isLogin) {
-                await login(form.email, form.password)
-                navigate('/dashboard')
-            } else {
-                await register(form.firstName, form.lastName, form.email, form.password)
-                navigate('/dashboard')
-            }
-        } catch (e) {
-            if (axios.isAxiosError(e)) {
-                setServerError(e.response?.data?.message ?? 'Something went wrong.')
-            } else {
-                setServerError('Something went wrong.')
-            }
-        }
-    }
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-[#0F1117] font-sans">
@@ -149,16 +79,7 @@ export default function AuthPage() {
                             <>
                                 Don't have an account?{' '}
                                 <button
-                                    onClick={() => {
-                                        setMode('register')
-                                        setForm({
-                                            firstName: '',
-                                            lastName: '',
-                                            email: '',
-                                            password: '',
-                                        })
-                                        setServerError('')
-                                    }}
+                                    onClick={() => switchMode('register')}
                                     className="cursor-pointer font-bold text-emerald-400 hover:underline"
                                 >
                                     Create an Account
@@ -168,16 +89,7 @@ export default function AuthPage() {
                             <>
                                 Already have an account?{' '}
                                 <button
-                                    onClick={() => {
-                                        setMode('login')
-                                        setForm({
-                                            firstName: '',
-                                            lastName: '',
-                                            email: '',
-                                            password: '',
-                                        })
-                                        setServerError('')
-                                    }}
+                                    onClick={() => switchMode('login')}
                                     className="cursor-pointer font-bold text-emerald-400 hover:underline"
                                 >
                                     Log in
@@ -251,24 +163,19 @@ export default function AuthPage() {
 
                         <button
                             type="submit"
-                            disabled={
-                                isLogin
-                                    ? !form.email || !form.password
-                                    : !form.firstName ||
-                                      !form.lastName ||
-                                      !form.email ||
-                                      !form.password ||
-                                      !!validatePassword(form.password)
-                            }
+                            disabled={isSubmitDisabled}
                             className="mt-2 w-full rounded-lg bg-emerald-500 py-3 font-bold tracking-wide text-neutral-50 transition-all duration-200 hover:cursor-pointer hover:bg-emerald-600 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-emerald-500/30 disabled:text-emerald-100/40"
                         >
                             {isLogin ? 'Log In' : 'Create Account'}
                         </button>
                     </form>
 
+                    {/* Disabled
+                    TODO: Create Endpoint "RESET PASS"
+                    */}
                     {isLogin && (
                         <div className="flex w-full justify-center">
-                            <button className="mt-5 text-center text-sm text-[#555A70] transition-colors hover:cursor-pointer hover:text-neutral-300">
+                            <button className="mt-5 text-center text-sm text-[#555A70] opacity-0 transition-colors hover:cursor-pointer hover:text-neutral-300">
                                 Forgot Password?
                             </button>
                         </div>
