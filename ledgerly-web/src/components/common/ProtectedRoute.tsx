@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
     if (isLoading) return <Spinner />
 
-    if (!isAuthenticated) return <Navigate to="/" replace />
+    if (!isAuthenticated) return <Navigate to="/auth" replace />
 
     return <>{children}</>
 }

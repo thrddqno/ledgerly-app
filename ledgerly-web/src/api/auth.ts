@@ -28,6 +28,6 @@ export async function logoutRequest() {
 }
 
 export async function getMe() {
-    const response = await api.get('/api/v1/categories')
+    const response = await api.get('/user/me')
     return response.data
 }
