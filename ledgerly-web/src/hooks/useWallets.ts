@@ -1,21 +1,22 @@
 // hooks/useWallets.ts
 import { useEffect, useState } from 'react'
 import {
-    type WalletDetail,
     getWalletsDetailed,
     createWallet as createWalletRequest,
     updateWallet as updateWalletRequest,
     deleteWallet as deleteWalletRequest,
-    type CreateWalletRequest,
-    type UpdateWalletRequest,
 } from '../api/wallet.ts'
+import type { Wallet, WalletRequest } from '../types/wallet.ts'
+import { useAuth } from '../context/AuthenticationContext.tsx'
 
 export function useWallets() {
-    const [wallets, setWallets] = useState<WalletDetail[]>([])
+    const [wallets, setWallets] = useState<Wallet[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState('')
+    const { user } = useAuth()
 
     async function fetchWallets() {
+        setIsLoading(true)
         try {
             const data = await getWalletsDetailed()
             setWallets(data)
@@ -26,12 +27,12 @@ export function useWallets() {
         }
     }
 
-    async function createWallet(data: CreateWalletRequest) {
+    async function createWallet(data: WalletRequest) {
         const created = await createWalletRequest(data)
         setWallets((prev) => [...prev, created])
     }
 
-    async function updateWallet(id: string, data: UpdateWalletRequest) {
+    async function updateWallet(id: string, data: WalletRequest) {
         const updated = await updateWalletRequest(id, data)
         setWallets((prev) => prev.map((w) => (w.id === id ? updated : w)))
     }
@@ -42,8 +43,9 @@ export function useWallets() {
     }
 
     useEffect(() => {
+        if (!user) return
         void fetchWallets()
-    }, [])
+    }, [user])
 
     const totalBalance = wallets.reduce((sum, w) => sum + w.startingBalance, 0)
 

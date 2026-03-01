@@ -15,7 +15,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthenticationContext.tsx'
 import { useState } from 'react'
-import { useWallets } from '../../hooks/useWallets.ts'
+import { useWallets } from '../../context/WalletContext'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
 
@@ -29,7 +29,7 @@ export default function SideBar() {
     const navigate = useNavigate()
     const location = useLocation()
     const { user, logout } = useAuth()
-    const { wallets, createWallet } = useWallets()
+    const { wallets } = useWallets()
     const [walletsOpen, setWalletsOpen] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const { theme, toggleTheme } = useTheme()
@@ -150,9 +150,7 @@ export default function SideBar() {
                 </div>
             </div>
 
-            {showModal && (
-                <AddWalletModal onClose={() => setShowModal(false)} onSubmit={createWallet} />
-            )}
+            {showModal && <AddWalletModal onClose={() => setShowModal(false)} />}
         </aside>
     )
 }
