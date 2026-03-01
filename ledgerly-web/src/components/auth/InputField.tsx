@@ -23,7 +23,7 @@ export function InputField({
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
-                    className="border-text-muted placeholder-text-muted w-full rounded border px-4 py-3 text-sm text-neutral-100 transition-all duration-200 outline-none focus:border-emerald-500"
+                    className="border-text-muted placeholder-text-muted text-text-primary w-full rounded border px-4 py-3 text-sm transition-all duration-200 outline-none focus:border-emerald-500"
                 />
                 {children}
             </div>

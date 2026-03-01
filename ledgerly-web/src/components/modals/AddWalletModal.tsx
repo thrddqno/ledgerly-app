@@ -7,7 +7,7 @@ interface Props {
     onSubmit: (data: CreateWalletRequest) => Promise<void | WalletDetail>
 }
 
-export default function AddWalletModal({ onClose, onSubmit }: Props) {
+export function AddWalletModal({ onClose, onSubmit }: Props) {
     const [form, setForm] = useState({ name: '', startingBalance: '' })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -41,24 +41,28 @@ export default function AddWalletModal({ onClose, onSubmit }: Props) {
                     </label>
                     <input
                         type="text"
-                        placeholder="e.g. BDO Savings"
+                        placeholder="e.g. Savings"
                         value={form.name}
                         onChange={set('name')}
                         className="border-border bg-base text-text-primary placeholder-text-muted focus:border-accent w-full rounded-lg border px-4 py-3 text-sm transition-all outline-none"
                     />
                 </div>
-
                 <div>
                     <label className="text-text-muted mb-2 block text-xs font-medium tracking-widest uppercase">
                         Starting Balance
                     </label>
-                    <input
-                        type="number"
-                        placeholder="0.00"
-                        value={form.startingBalance}
-                        onChange={set('startingBalance')}
-                        className="border-border bg-base text-text-primary placeholder-text-muted focus:border-accent w-full rounded-lg border px-4 py-3 text-sm transition-all outline-none"
-                    />
+                    <div className="relative">
+                        <span className="text-text-muted absolute top-1/2 left-4 -translate-y-1/2 text-sm">
+                            ₱
+                        </span>
+                        <input
+                            type="number"
+                            placeholder="0.00"
+                            value={form.startingBalance}
+                            onChange={set('startingBalance')}
+                            className="border-border bg-base text-text-primary placeholder-text-muted focus:border-accent w-full rounded-lg border py-3 pr-4 pl-8 text-sm transition-all outline-none"
+                        />
+                    </div>
                 </div>
 
                 {error && <p className="text-expense text-center text-sm">{error}</p>}

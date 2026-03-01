@@ -25,7 +25,7 @@ export default function Modal({ title, onClose, children, maxWidth = 'max-w-sm' 
             {/* Backdrop */}
             <div
                 onClick={handleClose}
-                className={`fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-200 ${visible ? 'opacity-100' : 'opacity-0'}`}
+                className={`fixed inset-0 z-40 bg-black/50 backdrop-brightness-75 transition-opacity duration-200 ${visible ? 'opacity-100' : 'opacity-0'}`}
             />
 
             {/* Modal */}

@@ -19,3 +19,23 @@
     --color-warning: #F5A623;
     --color-danger: #F44336;
 }
+
+[data-theme="light"] {
+    --color-base: #DDE0E8;
+    --color-surface: #E7EAF0;
+    --color-elevated: #D5D8E2;
+    --color-border: #BEC3CF;
+    --color-text-primary: #14161F;
+    --color-text-secondary: #4A4F60;
+    --color-text-muted: #82869A;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

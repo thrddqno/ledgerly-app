@@ -43,7 +43,7 @@ export default function AuthPage() {
                 />
 
                 {/* Gradient overlay */}
-                <div className="from-base via-base/20 absolute inset-0 bg-linear-to-t to-transparent" />
+                <div className="from-surface via-surface/20 absolute inset-0 bg-linear-to-t to-transparent" />
 
                 <div className="relative z-10">
                     <p className="text-text-primary mb-3 text-sm font-medium tracking-[0.15em] uppercase">
@@ -60,7 +60,7 @@ export default function AuthPage() {
             </div>
 
             {/* Right Pane */}
-            <div className="bg-base flex flex-1 flex-col items-center justify-center px-6 py-12 md:px-12">
+            <div className="bg-surface flex flex-1 flex-col items-center justify-center px-6 py-12 md:px-12">
                 <div className="w-full max-w-sm">
                     {/* Heading */}
                     <h2 className="text-text-primary mb-3 text-center text-3xl font-bold md:text-4xl">
@@ -90,7 +90,7 @@ export default function AuthPage() {
                                 Already have an account?{' '}
                                 <button
                                     onClick={() => switchMode('login')}
-                                    className="hover:text-accent-hover cursor-pointer font-bold text-emerald-400 hover:underline"
+                                    className="hover:text-accent-hover text-accent cursor-pointer font-bold hover:underline"
                                 >
                                     Log in
                                 </button>
