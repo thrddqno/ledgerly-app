@@ -4,4 +4,18 @@
 
 @theme {
     --font-sans: 'Sora', sans-serif;
+
+    --color-base: #0F1117;
+    --color-surface: #1A1D27;
+    --color-elevated: #222536;
+    --color-border: #2A2D3A;
+    --color-accent: #00C896;
+    --color-accent-hover: #00A87E;
+    --color-text-primary: #F0F2F8;
+    --color-text-secondary: #8B90A7;
+    --color-text-muted: #555A70;
+    --color-income: #00C896;
+    --color-expense: #FF5C5C;
+    --color-warning: #F5A623;
+    --color-danger: #F44336;
 }

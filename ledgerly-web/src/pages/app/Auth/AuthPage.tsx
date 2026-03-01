@@ -30,7 +30,7 @@ export default function AuthPage() {
     }, [isAuthenticated, isLoading, navigate])
 
     return (
-        <div className="flex h-screen w-screen overflow-hidden bg-[#0F1117] font-sans">
+        <div className="bg-base flex h-screen w-screen overflow-hidden font-sans">
             {/* LEFT PANE — hidden below md breakpoint */}
             <div className="relative hidden flex-1 flex-col justify-end overflow-hidden p-12 md:flex">
                 {/* Background image */}
@@ -43,16 +43,16 @@ export default function AuthPage() {
                 />
 
                 {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-linear-to-t from-[#0F1117] via-[#0F1117]/20 to-transparent" />
+                <div className="from-base via-base/20 absolute inset-0 bg-linear-to-t to-transparent" />
 
                 <div className="relative z-10">
-                    <p className="mb-3 text-sm font-medium tracking-[0.15em] text-white uppercase">
+                    <p className="text-text-primary mb-3 text-sm font-medium tracking-[0.15em] uppercase">
                         One dashboard for all your wallets
                     </p>
-                    <h1 className="text-5xl leading-tight font-black text-white xl:text-6xl">
+                    <h1 className="text-text-primary text-5xl leading-tight font-black xl:text-6xl">
                         Know Where
                         <br />
-                        Your <span className="text-emerald-400">Money</span>
+                        Your <span className="text-accent">Money</span>
                         <br />
                         Goes
                     </h1>
@@ -60,13 +60,13 @@ export default function AuthPage() {
             </div>
 
             {/* Right Pane */}
-            <div className="flex flex-1 flex-col items-center justify-center bg-[#0F1117] px-6 py-12 md:px-12">
+            <div className="bg-base flex flex-1 flex-col items-center justify-center px-6 py-12 md:px-12">
                 <div className="w-full max-w-sm">
                     {/* Heading */}
-                    <h2 className="mb-3 text-center text-3xl font-bold text-neutral-100 md:text-4xl">
+                    <h2 className="text-text-primary mb-3 text-center text-3xl font-bold md:text-4xl">
                         {isLogin ? (
                             <>
-                                Welcome to <span className="text-emerald-400">Ledgerly </span>{' '}
+                                Welcome to <span className="text-accent">Ledgerly </span>{' '}
                             </>
                         ) : (
                             'Create an Account'
@@ -74,13 +74,13 @@ export default function AuthPage() {
                     </h2>
 
                     {/* State prompt */}
-                    <p className="mb-8 text-center text-sm text-[#8B90A7]">
+                    <p className="text-text-secondary mb-8 text-center text-sm">
                         {isLogin ? (
                             <>
                                 Don't have an account?{' '}
                                 <button
                                     onClick={() => switchMode('register')}
-                                    className="cursor-pointer font-bold text-emerald-400 hover:underline"
+                                    className="hover:text-accent-hover cursor-pointer font-bold text-emerald-400 hover:underline"
                                 >
                                     Create an Account
                                 </button>
@@ -90,7 +90,7 @@ export default function AuthPage() {
                                 Already have an account?{' '}
                                 <button
                                     onClick={() => switchMode('login')}
-                                    className="cursor-pointer font-bold text-emerald-400 hover:underline"
+                                    className="hover:text-accent-hover cursor-pointer font-bold text-emerald-400 hover:underline"
                                 >
                                     Log in
                                 </button>
@@ -134,37 +134,42 @@ export default function AuthPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPass((p) => !p)}
-                                className="absolute top-1/2 right-4 -translate-y-1/2 text-neutral-500 transition-colors hover:text-neutral-300"
+                                className="text-text-muted hover:text-text-primary absolute top-1/2 right-4 -translate-y-1/2 transition-colors"
                             >
                                 {showPass ? <Eye size={16} /> : <EyeOff size={16} />}
                             </button>
                         </InputField>
 
                         {!isLogin && form.password && passwordError && (
-                            <ul className="mb-4 space-y-1">
-                                {passwordRequirements.map((req) => {
-                                    const passed = req.test(form.password)
-                                    return (
-                                        <li
-                                            key={req.label}
-                                            className={`flex items-center gap-2 text-xs ${passed ? 'text-emerald-400' : 'text-red-400'}`}
-                                        >
-                                            <span>{passed ? '✓' : '○'}</span>
-                                            {req.label}
-                                        </li>
-                                    )
-                                })}
-                            </ul>
+                            <>
+                                <p className="text-danger mb-2 text-xs">
+                                    Password must contain the following:
+                                </p>
+                                <ul className="mb-4 space-y-1">
+                                    {passwordRequirements.map((req) => {
+                                        const passed = req.test(form.password)
+                                        return (
+                                            <li
+                                                key={req.label}
+                                                className={`flex items-center gap-2 text-xs ${passed ? 'text-accent' : 'text-danger'}`}
+                                            >
+                                                <span>{passed ? '✓' : '✕'}</span>
+                                                {req.label}
+                                            </li>
+                                        )
+                                    })}
+                                </ul>
+                            </>
                         )}
 
                         {serverError && (
-                            <p className="m-3 text-center text-sm text-red-400">{serverError}</p>
+                            <p className="text-danger m-3 text-center text-sm">{serverError}</p>
                         )}
 
                         <button
                             type="submit"
                             disabled={isSubmitDisabled}
-                            className="mt-2 w-full rounded-lg bg-emerald-500 py-3 font-bold tracking-wide text-neutral-50 transition-all duration-200 hover:cursor-pointer hover:bg-emerald-600 active:scale-[0.99] disabled:cursor-not-allowed disabled:bg-emerald-500/30 disabled:text-emerald-100/40"
+                            className="text-text-primary bg-accent hover:bg-accent-hover disabled:bg-accent/30 disabled:text-accent/40 mt-2 w-full rounded-lg py-3 font-bold tracking-wide transition-all duration-200 hover:cursor-pointer active:scale-[0.99] disabled:cursor-not-allowed"
                         >
                             {isLogin ? 'Log In' : 'Create Account'}
                         </button>
@@ -175,7 +180,7 @@ export default function AuthPage() {
                     */}
                     {isLogin && (
                         <div className="flex w-full justify-center">
-                            <button className="mt-5 text-center text-sm text-[#555A70] opacity-0 transition-colors hover:cursor-pointer hover:text-neutral-300">
+                            <button className="text-text-muted hover:text-text-primary mt-5 text-center text-sm opacity-0 transition-colors hover:cursor-pointer">
                                 Forgot Password?
                             </button>
                         </div>

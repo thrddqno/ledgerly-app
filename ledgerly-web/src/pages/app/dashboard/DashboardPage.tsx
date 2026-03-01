@@ -1,12 +1,9 @@
-import Header from '../../../components/layout/Header'
+import SideBar from '../../../components/layout/SideBar.tsx'
 
 export default function DashboardPage() {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <Header />
-            <main className="p-6">
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-            </main>
+        <div className="bg-base flex h-screen w-screen overflow-hidden">
+            <SideBar></SideBar>
         </div>
     )
 }
