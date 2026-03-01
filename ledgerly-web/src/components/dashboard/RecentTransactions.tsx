@@ -89,8 +89,8 @@ export default function RecentTransactions({ transactions }: Props) {
                                         <span
                                             className={`text-sm font-semibold tabular-nums ${
                                                 tx.transactionType === 'INCOME'
-                                                    ? 'text-emerald-400'
-                                                    : 'text-rose-400'
+                                                    ? 'text-income'
+                                                    : 'text-expense'
                                             }`}
                                         >
                                             {tx.transactionType === 'INCOME' ? '+' : '-'}

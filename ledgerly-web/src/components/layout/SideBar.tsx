@@ -18,6 +18,8 @@ import { useState } from 'react'
 import { useWallets } from '../../context/WalletContext'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
+import { getWalletBalance } from '../../types/wallet.ts'
+import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Your Ledger', path: '/dashboard' },
@@ -83,9 +85,9 @@ export default function SideBar() {
                                                         </span>
                                                     </div>
                                                     <span
-                                                        className={`ml-2 shrink-0 text-xs font-medium ${w.startingBalance >= 0 ? 'text-accent' : 'text-expense'}`}
+                                                        className={`ml-2 shrink-0 text-xs font-medium ${getWalletBalance(w) >= 0 ? 'text-income' : 'text-expense'}`}
                                                     >
-                                                        ₱{w.startingBalance.toLocaleString()}
+                                                        {formatCurrency(getWalletBalance(w), 'PHP')}
                                                     </span>
                                                 </button>
                                             ))}

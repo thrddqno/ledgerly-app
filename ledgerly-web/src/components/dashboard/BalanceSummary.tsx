@@ -18,7 +18,7 @@ export default function BalanceSummary({ wallets }: BalanceSummaryProps) {
                 Current Balance
             </span>
             <span
-                className={`${total > 0 ? 'text-accent' : 'text-danger'} text-[2rem] leading-none font-bold tracking-tight`}
+                className={`${total > 0 ? 'text-income' : total < 0 ? 'text-expense' : 'text-text-primary'} text-[2rem] leading-none font-bold tracking-tight`}
             >
                 {formatted}
             </span>

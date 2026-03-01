@@ -26,13 +26,11 @@ export default function WalletCard({ wallet, isSelected, onClick }: Props) {
             {/* Color dot + name */}
             <div className="flex min-w-0 items-center gap-2.5">
                 <FontAwesomeIcon icon={faWallet} className="h-4 w-4 text-taupe-600" />
-                <span className="text-content truncate text-sm font-medium">{wallet.name}</span>
+                <span className="text-content truncate text-sm font-bold">{wallet.name}</span>
             </div>
 
             {/* Balance */}
-            <span
-                className={`text-sm font-bold tabular-nums ${isPositive ? 'text-emerald-500' : 'text-rose-500'}`}
-            >
+            <span className={`tabular-nums ${isPositive ? 'text-accent' : 'text-danger'}`}>
                 {isPositive ? '+' : ''}
                 {formatted}
             </span>
