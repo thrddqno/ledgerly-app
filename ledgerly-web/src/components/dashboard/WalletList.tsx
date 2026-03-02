@@ -2,17 +2,19 @@ import { useState, useRef } from 'react'
 import WalletCard from './WalletCard.tsx'
 import { PackageOpen } from 'lucide-react'
 import type { Wallet } from '../../types/wallet.ts'
-import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useWallets } from '../../hooks/useWallets.ts'
+import { useModal } from '../../context/ModalContext.tsx'
+import { useDevice } from '../../context/DeviceContext.tsx'
 
 interface Props {
     onWalletSelect?: (wallet: Wallet | null) => void
+    selectedWallet: Wallet | null
 }
 
-export default function WalletList({ onWalletSelect }: Props) {
+export default function WalletList({ onWalletSelect, selectedWallet }: Props) {
     const { wallets } = useWallets()
-    const [selectedId, setSelectedId] = useState<string | null>(null)
-    const [showModal, setShowModal] = useState(false)
+    const { openModal } = useModal()
+    const { breakpoint } = useDevice()
     const MAX_WALLETS = 10
 
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -51,20 +53,19 @@ export default function WalletList({ onWalletSelect }: Props) {
     }
 
     const handleClick = (wallet: Wallet) => {
-        const next = selectedId === wallet.id ? null : wallet.id
-        setSelectedId(next)
-        onWalletSelect?.(next ? wallet : null)
+        const next = selectedWallet?.id === wallet.id ? null : wallet
+        onWalletSelect?.(next)
     }
 
     return (
         <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
+            <div className="flex h-5 items-center justify-between">
                 <span className="text-text-secondary text-xs font-semibold tracking-widest uppercase">
                     Wallets
                 </span>
                 {wallets.length < MAX_WALLETS && (
                     <button
-                        onClick={() => setShowModal(true)}
+                        onClick={() => openModal({ type: 'addWallet' })}
                         className="bg-accent hover:bg-accent-hover cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-150"
                     >
                         + Add Wallet
@@ -80,15 +81,15 @@ export default function WalletList({ onWalletSelect }: Props) {
             ) : (
                 <div className="relative">
                     <div
-                        className={`from-base pointer-events-none absolute top-0 left-0 z-10 h-full w-20 bg-linear-to-r to-transparent transition-opacity duration-200 ${showLeftFade ? 'opacity-100' : 'opacity-0'}`}
+                        className={`from-base pointer-events-none absolute z-10 h-full ${breakpoint == 'phone' ? 'w-5' : 'w-20'} bg-linear-to-r to-transparent transition-opacity ${showLeftFade ? 'opacity-100' : 'opacity-0'}`}
                     />
                     <div
-                        className={`from-base pointer-events-none absolute top-0 right-0 z-10 h-full w-20 bg-linear-to-l to-transparent transition-opacity duration-200 ${showRightFade ? 'opacity-100' : 'opacity-0'}`}
+                        className={`from-base pointer-events-none absolute top-0 right-0 z-10 h-full ${breakpoint == 'phone' ? 'w-5' : 'w-20'} bg-linear-to-l to-transparent transition-opacity ${showRightFade ? 'opacity-100' : 'opacity-0'}`}
                     />
 
                     <div
                         ref={scrollRef}
-                        className="flex cursor-grab flex-row gap-3 overflow-x-auto pb-1 select-none"
+                        className="flex flex-row gap-3 overflow-x-auto pb-1 select-none"
                         style={{ scrollbarWidth: 'none' }}
                         onMouseDown={onMouseDown}
                         onMouseMove={onMouseMove}
@@ -100,15 +101,13 @@ export default function WalletList({ onWalletSelect }: Props) {
                             <WalletCard
                                 key={wallet.id}
                                 wallet={wallet}
-                                isSelected={selectedId === wallet.id}
+                                isSelected={selectedWallet?.id === wallet.id}
                                 onClick={handleClick}
                             />
                         ))}
-                        <div className="w-4 flex-shrink-0" />
                     </div>
                 </div>
             )}
-            {showModal && <AddWalletModal onClose={() => setShowModal(false)} />}
         </div>
     )
 }
