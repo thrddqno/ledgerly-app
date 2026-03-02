@@ -10,7 +10,6 @@ import {
     User,
     Wallet,
     WalletCards,
-    WalletIcon,
 } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthenticationContext.tsx'
@@ -18,8 +17,8 @@ import { useState } from 'react'
 import { useWallets } from '../../context/WalletContext'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
-import { getWalletBalance } from '../../types/wallet.ts'
-import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faWallet } from '@fortawesome/free-solid-svg-icons'
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Your Ledger', path: '/dashboard' },
@@ -68,7 +67,7 @@ export default function SideBar() {
                                 </button>
 
                                 {walletsOpen && (
-                                    <div className="border-text-muted mt-1 ml-4 flex flex-col gap-0.5 border-l pl-3">
+                                    <div className="border-text-muted/30 mt-1 ml-4 flex flex-col border-l pl-3">
                                         <>
                                             {wallets.map((w) => (
                                                 <button
@@ -76,25 +75,20 @@ export default function SideBar() {
                                                     className="group text-text-secondary hover:text-text-primary hover:bg-elevated hover:border-accent flex w-full items-center justify-between rounded-md px-2 py-2 transition-all hover:cursor-pointer"
                                                 >
                                                     <div className="flex min-w-0 items-center gap-1.5">
-                                                        <WalletIcon
-                                                            size={13}
-                                                            className="shrink-0"
+                                                        <FontAwesomeIcon
+                                                            icon={faWallet}
+                                                            className="hover:text-taupe shrink-0 text-sm text-taupe-600"
                                                         />
-                                                        <span className="truncate text-xs">
+                                                        <span className="truncate text-sm">
                                                             {w.name}
                                                         </span>
                                                     </div>
-                                                    <span
-                                                        className={`ml-2 shrink-0 text-xs font-medium ${getWalletBalance(w) >= 0 ? 'text-income' : 'text-expense'}`}
-                                                    >
-                                                        {formatCurrency(getWalletBalance(w), 'PHP')}
-                                                    </span>
                                                 </button>
                                             ))}
                                             {wallets.length < 10 && (
                                                 <button
                                                     onClick={() => setShowModal(true)}
-                                                    className="text-text-muted hover:text-accent-hover hover:bg-accent/10 flex items-center gap-1.5 rounded-md px-2 py-2 text-xs transition-all hover:cursor-pointer hover:font-medium"
+                                                    className="text-text-muted hover:text-accent-hover hover:bg-accent/10 flex items-center gap-1.5 rounded-md px-2 py-2 text-sm transition-all hover:cursor-pointer hover:font-medium"
                                                 >
                                                     <Plus size={12} />
                                                     Add Wallet
@@ -125,7 +119,7 @@ export default function SideBar() {
                 })}
             </nav>
 
-            <div className="border-border flex items-center justify-between border-t pt-3">
+            <div className="border-border flex items-center justify-between border-t pt-4">
                 <div className="flex items-center gap-2.5">
                     <div className="bg-accent flex h-8 w-8 items-center justify-center rounded-full">
                         <User size={20} />
