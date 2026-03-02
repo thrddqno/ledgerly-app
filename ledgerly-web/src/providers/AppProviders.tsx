@@ -1,6 +1,8 @@
 import { AuthProvider } from '../context/AuthenticationContext.tsx'
 import { ModalProvider } from '../context/ModalContext.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { DeviceProvider } from '../context/DeviceContext.tsx'
+import { UIProvider } from '../context/UIContext.tsx'
 
 interface Props {
     children: React.ReactNode
@@ -17,10 +19,14 @@ const queryClient = new QueryClient({
 
 export default function AppProviders({ children }: Props) {
     return (
-        <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-                <ModalProvider>{children}</ModalProvider>
-            </AuthProvider>
-        </QueryClientProvider>
+        <DeviceProvider>
+            <UIProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider>
+                        <ModalProvider>{children}</ModalProvider>
+                    </AuthProvider>
+                </QueryClientProvider>
+            </UIProvider>
+        </DeviceProvider>
     )
 }
