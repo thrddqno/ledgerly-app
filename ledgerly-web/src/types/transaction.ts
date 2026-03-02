@@ -10,6 +10,8 @@ export interface Transaction {
     relatedTransactionId?: string
     transfer: boolean
     categoryResponse: Category
+    isIncoming: boolean
+    relatedWalletId: string
 }
 
 export interface TransactionRequest {
