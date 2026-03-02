@@ -2,12 +2,18 @@ import type { Transaction } from '../../types/transaction.ts'
 import { formatDate, formatTime } from '../../utils/formatter/dateFormatters.ts'
 import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
 import { useWallets } from '../../context/WalletContext.tsx'
-import { useCategories } from '../../context/CategoryContext.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { parseIcon } from '../../utils/parseIcon.ts'
+import { ChevronRight, PackageOpen } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import type { Wallet } from '../../types/wallet.ts'
 
 interface Props {
     transactions: Transaction[]
+    isLoading?: boolean
+    onLoadMore?: () => void
+    resetScroll: string
+    selectedWallet: Wallet | null
 }
 
 function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
@@ -22,28 +28,74 @@ function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
     return Array.from(map.entries())
 }
 
-export default function RecentTransactions({ transactions }: Props) {
-    const { allCategories } = useCategories()
+export default function RecentTransactionsPanel({
+    transactions,
+    isLoading,
+    onLoadMore,
+    resetScroll,
+    selectedWallet,
+}: Props) {
     const { wallets } = useWallets()
     const groups = groupByDate(transactions)
+
+    const scrollRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const el = scrollRef.current
+        if (!el) return
+        const handleScroll = () => {
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+                onLoadMore?.()
+            }
+        }
+        el.addEventListener('scroll', handleScroll)
+        return () => el.removeEventListener('scroll', handleScroll)
+    }, [onLoadMore])
+
+    useEffect(() => {
+        scrollRef.current?.scrollTo({ top: 0 })
+    }, [resetScroll])
 
     return (
         <div className="flex h-full flex-col overflow-hidden">
             {/* Pinned header */}
-            <div className="bg-surface border-border shrink-0 border-b px-6 pt-6 pb-4">
-                <h2 className="text-text-primary text-content text-sm font-semibold">
-                    Recent Transactions
-                </h2>
-                <p className="text-text-secondary text-subtle mt-0.5 text-xs">
-                    All wallets · Last 30 days
-                </p>
+            <div className="bg-surface border-border flex shrink-0 items-center justify-between border-b px-6 py-4">
+                <div className="flex flex-col gap-1">
+                    <h2 className="text-text-primary text-content text-sm font-semibold">
+                        Recent Transactions
+                    </h2>
+                    <p className="text-text-secondary text-subtle text-xs">
+                        {selectedWallet?.name || 'All wallets'} · Last 30 days
+                    </p>
+                </div>
+
+                {selectedWallet && (
+                    <button className="text-accent hover:text-accent-hover flex items-center gap-1 text-xs font-bold transition-colors duration-100 hover:cursor-pointer">
+                        View in Wallet
+                        <ChevronRight className="h-4 w-5" />
+                    </button>
+                )}
             </div>
 
+            {/* Initial load spinner */}
+
+            {/* Empty state - only show when not loading */}
+
             {/* Independently scrolling list */}
-            <div className="flex-1 space-y-7 overflow-y-auto px-6 py-5">
-                {groups.length === 0 && (
-                    <div className="text-text-primary text-subtle flex h-40 items-center justify-center text-sm">
-                        No transactions yet.
+            <div
+                ref={scrollRef}
+                className="scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-border scrollbar-track-transparent flex-1 space-y-7 overflow-y-auto px-6 py-5"
+            >
+                {isLoading && groups.length === 0 && (
+                    <div className="flex h-full items-center justify-center">
+                        <div className="border-accent h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+                    </div>
+                )}
+
+                {!isLoading && groups.length === 0 && (
+                    <div className="text-text-muted flex h-full flex-col items-center justify-center gap-2">
+                        <PackageOpen />
+                        <div className="text-subtle flex text-sm">No transactions yet.</div>
                     </div>
                 )}
 
@@ -63,11 +115,11 @@ export default function RecentTransactions({ transactions }: Props) {
                                     {/* Category icon circle */}
                                     <div
                                         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-                                        style={{ backgroundColor: tx.category.color }} // hex + ~16% opacity
+                                        style={{ backgroundColor: tx.categoryResponse.color }} // hex + ~16% opacity
                                     >
-                                        {tx.category && (
+                                        {tx.categoryResponse && (
                                             <FontAwesomeIcon
-                                                icon={parseIcon(tx.category.icon)}
+                                                icon={parseIcon(tx.categoryResponse.icon)}
                                                 className="text-sm text-white"
                                             />
                                         )}
@@ -76,7 +128,7 @@ export default function RecentTransactions({ transactions }: Props) {
                                     {/* Description + wallet · category */}
                                     <div className="flex min-w-0 flex-1 flex-col">
                                         <span className="text-text-primary truncate text-sm font-medium">
-                                            {tx.notes ?? tx.category.name}
+                                            {tx.notes ?? tx.categoryResponse.name}
                                         </span>
                                         <span className="text-text-secondary mt-0.5 text-xs">
                                             {wallets.find((w) => w.id == tx.walletId)?.name ??
@@ -88,12 +140,14 @@ export default function RecentTransactions({ transactions }: Props) {
                                     <div className="text-text-muted ml-6 flex shrink-0 flex-col items-end">
                                         <span
                                             className={`text-sm font-semibold tabular-nums ${
-                                                tx.transactionType === 'INCOME'
+                                                tx.categoryResponse.transactionType === 'INCOME'
                                                     ? 'text-income'
                                                     : 'text-expense'
                                             }`}
                                         >
-                                            {tx.transactionType === 'INCOME' ? '+' : '-'}
+                                            {tx.categoryResponse.transactionType === 'INCOME'
+                                                ? '+'
+                                                : '-'}
                                             {formatCurrency(tx.amount, 'PHP')}
                                         </span>
                                         <span className="text-subtle mt-0.5 text-xs">
@@ -105,6 +159,11 @@ export default function RecentTransactions({ transactions }: Props) {
                         </div>
                     </div>
                 ))}
+                {isLoading && groups.length > 0 && (
+                    <div className="flex items-center justify-center py-6">
+                        <div className="border-accent h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+                    </div>
+                )}
             </div>
         </div>
     )
