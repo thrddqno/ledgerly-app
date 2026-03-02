@@ -4,11 +4,45 @@ export interface Transaction {
     id: string
     amount: number
     date: string
-    isIncoming: boolean
     notes: string
-    transactionType: 'INCOME' | 'EXPENSE'
-    transferId: string
-    relatedTransactionId: string
     walletId: string
-    category: Category
+    transferId?: string
+    relatedTransactionId?: string
+    transfer: boolean
+    categoryResponse: Category
+}
+
+export interface TransactionRequest {
+    categoryId: string
+    notes: string
+    amount: number
+    date: string
+}
+
+export interface TransferRequest {
+    sourceWalletId: string
+    targetWalletId: string
+    amount: number
+    date: string
+}
+
+export interface UpdateTransferRequest {
+    sourceWalletId: string
+    targetWalletId: string
+    amount: number
+    date: string
+}
+
+export interface PaginatedTransactionResponse {
+    data: Transaction[]
+    page: number
+    limit: number
+    total: number
+}
+
+export interface CursorPagedTransactionResponse {
+    data: Transaction[]
+    pageSize: number
+    nextCursor: string | null
+    hasNext: boolean
 }
