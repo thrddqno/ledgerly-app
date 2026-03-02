@@ -1,40 +1,77 @@
 import { getWalletBalance, type Wallet } from '../../types/wallet.ts'
 import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWallet } from '@fortawesome/free-solid-svg-icons'
+import { faPencil, faWallet } from '@fortawesome/free-solid-svg-icons'
+import { useDevice } from '../../context/DeviceContext.tsx'
 
-interface Props {
-    wallet: Wallet
-    isSelected: boolean
-    onClick: (wallet: Wallet) => void
-}
+type Props =
+    | {
+          wallet: Wallet
+          isSelected: boolean
+          modifiable: true
+          onClick: (wallet: Wallet) => void
+          onEdit: (wallet: Wallet) => void // required when modifiable is true
+      }
+    | {
+          wallet: Wallet
+          isSelected: boolean
+          modifiable?: false
+          onClick: (wallet: Wallet) => void
+          onEdit?: never // forbidden when modifiable is false
+      }
 
-export default function WalletCard({ wallet, isSelected, onClick }: Props) {
+export default function WalletCard({ wallet, isSelected, onClick, modifiable, onEdit }: Props) {
+    const { breakpoint } = useDevice()
+    const showEdit = breakpoint != 'desktop' && isSelected
     const balance = getWalletBalance(wallet)
     const isPositive = balance >= 0
     const formatted = formatCurrency(balance, 'PHP')
 
     return (
-        <button
-            onClick={() => onClick(wallet)}
-            className={`text-text-primary flex h-28 w-48 shrink-0 cursor-pointer flex-col justify-center gap-2 rounded-xl border p-4 text-left transition-all duration-150 ${
-                isSelected
-                    ? 'border-accent bg-accent/10'
-                    : 'border-border bg-surface hover:border-border-hover hover:shadow-sm'
-            } `}
-        >
-            <div className="flex w-full flex-row items-center gap-2">
-                <FontAwesomeIcon icon={faWallet} className="text-2xl text-taupe-500" />
-                <div className="flex min-w-0 flex-col items-start">
-                    <span className="text-text-primary truncate px-1 text-sm font-bold">
-                        {wallet.name}
-                    </span>
-                    <span className={`tabular-nums ${isPositive ? 'text-accent' : 'text-danger'}`}>
-                        {isPositive ? '+' : ''}
-                        {formatted}
-                    </span>
+        <div className="group relative">
+            <button
+                onClick={() => onClick(wallet)}
+                className={`text-text-primary group-hover:shadow-text-primary/10 flex w-64 shrink-0 cursor-pointer flex-col justify-center gap-2 rounded-md border p-4 text-left transition-all duration-150 group-hover:shadow-lg ${
+                    isSelected
+                        ? 'border-accent bg-accent/10'
+                        : 'border-border bg-surface hover:border-border-hover'
+                }`}
+            >
+                <div className="flex w-full flex-row items-center gap-4">
+                    <div className="bg-accent/10 text-accent flex h-10 w-10 items-center justify-center rounded-3xl">
+                        <FontAwesomeIcon icon={faWallet} />
+                    </div>
+                    <div className="flex min-w-0 flex-col items-start">
+                        <span className="text-text-primary text-md truncate px-1">
+                            {wallet.name}
+                        </span>
+
+                        <span
+                            className={`text-lg font-semibold tabular-nums ${
+                                isPositive ? 'text-income' : 'text-expense'
+                            }`}
+                        >
+                            {isPositive ? '+' : ''}
+                            {formatted}
+                        </span>
+                    </div>
                 </div>
-            </div>
-        </button>
+            </button>
+            {modifiable && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onEdit?.(wallet)
+                    }}
+                    className={`hover:bg-accent-hover/75 absolute top-2 right-2 flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200 ${
+                        showEdit
+                            ? ''
+                            : 'scale-90 opacity-0 group-hover:scale-100 group-hover:opacity-100'
+                    }`}
+                >
+                    <FontAwesomeIcon icon={faPencil} className="text-xs" />
+                </button>
+            )}
+        </div>
     )
 }

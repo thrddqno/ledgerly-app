@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import WalletCard from './WalletCard.tsx'
 import { PackageOpen } from 'lucide-react'
 import type { Wallet } from '../../types/wallet.ts'
@@ -9,9 +9,10 @@ import { useDevice } from '../../context/DeviceContext.tsx'
 interface Props {
     onWalletSelect?: (wallet: Wallet | null) => void
     selectedWallet: Wallet | null
+    modifiable?: boolean
 }
 
-export default function WalletList({ onWalletSelect, selectedWallet }: Props) {
+export default function WalletList({ onWalletSelect, selectedWallet, modifiable }: Props) {
     const { wallets } = useWallets()
     const { openModal } = useModal()
     const { breakpoint } = useDevice()
@@ -57,20 +58,19 @@ export default function WalletList({ onWalletSelect, selectedWallet }: Props) {
         onWalletSelect?.(next)
     }
 
+    const handleEditWallet = useCallback(
+        (wallet: Wallet) => {
+            openModal({ type: 'editWallet', payload: wallet })
+        },
+        [openModal]
+    )
+
     return (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 pb-3 select-none">
             <div className="flex h-5 items-center justify-between">
                 <span className="text-text-secondary text-xs font-semibold tracking-widest uppercase">
                     Wallets
                 </span>
-                {wallets.length < MAX_WALLETS && (
-                    <button
-                        onClick={() => openModal({ type: 'addWallet' })}
-                        className="bg-accent hover:bg-accent-hover cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-150"
-                    >
-                        + Add Wallet
-                    </button>
-                )}
             </div>
 
             {wallets.length === 0 ? (
@@ -99,14 +99,24 @@ export default function WalletList({ onWalletSelect, selectedWallet }: Props) {
                     >
                         {wallets.map((wallet) => (
                             <WalletCard
+                                modifiable={!!modifiable}
                                 key={wallet.id}
                                 wallet={wallet}
                                 isSelected={selectedWallet?.id === wallet.id}
                                 onClick={handleClick}
+                                {...(modifiable && { onEdit: handleEditWallet })}
                             />
                         ))}
                     </div>
                 </div>
+            )}
+            {wallets.length < MAX_WALLETS && modifiable && (
+                <button
+                    onClick={() => openModal({ type: 'addWallet' })}
+                    className="bg-accent hover:bg-accent-hover w-64 cursor-pointer rounded-md py-2.5 text-xs font-semibold text-white transition-colors duration-150"
+                >
+                    + Add Wallet
+                </button>
             )}
         </div>
     )
