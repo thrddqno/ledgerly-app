@@ -8,7 +8,7 @@ interface Props {
     maxWidth?: string
 }
 
-export default function Modal({ title, onClose, children, maxWidth = 'max-w-sm' }: Props) {
+export default function Modal({ title, onClose, children, maxWidth }: Props) {
     const [visible, setVisible] = useState(false)
 
     useEffect(() => {
@@ -28,9 +28,9 @@ export default function Modal({ title, onClose, children, maxWidth = 'max-w-sm' 
                 className={`fixed inset-0 z-40 bg-black/50 backdrop-brightness-75 transition-opacity duration-200 ${visible ? 'opacity-100' : 'opacity-0'}`}
             />
 
-            {/* Modal */}
+            {/* Modal*/}
             <div
-                className={`bg-surface border-border fixed top-1/2 left-1/2 z-50 w-full ${maxWidth} -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 shadow-2xl transition-all duration-200 ${visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+                className={`bg-surface border-border fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 ${maxWidth ? maxWidth : 'max-w-sm'} -translate-y-1/2 rounded-2xl border p-6 shadow-2xl transition-all duration-200 ${visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
             >
                 {/* Header */}
                 <div className="mb-6 flex items-center justify-between">
