@@ -27,10 +27,7 @@ api.interceptors.response.use(
             originalRequest.url?.includes('/auth/register') ||
             originalRequest.url?.includes('/auth/login')
 
-        if (
-            error.response?.status === 401 ||
-            (error.response?.status === 403 && !originalRequest._retry && !isAuthEndpoint)
-        ) {
+        if (error.response?.status === 401 || (!originalRequest._retry && !isAuthEndpoint)) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject })
