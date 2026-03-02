@@ -70,8 +70,8 @@ export function useCategories() {
     })
 
     return {
+        allCategories: categories,
         categories,
-        allCategories,
         isLoading,
         error: error?.message ?? '',
         createCategory: createCategoryMutation.mutate,
