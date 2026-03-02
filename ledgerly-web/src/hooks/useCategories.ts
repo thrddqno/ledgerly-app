@@ -9,76 +9,24 @@ import {
 } from '../api/category.ts'
 import { useAuth } from '../context/AuthenticationContext.tsx'
 import type {
-    CategoriesGrouped,
     Category,
-    CreateCategoryRequest,
-    MergeCategoriesRequest,
     UpdateCategoryRequest,
 } from '../types/category.ts'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useCategories() {
-    const [categories, setCategories] = useState<CategoriesGrouped>({
-        income: [],
-        expenses: [],
-        transfer: [],
-    })
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState('')
+    const queryClient = useQueryClient()
     const { user } = useAuth()
 
-    async function fetchCategories() {
-        setIsLoading(true)
-        try {
-            const data = await getCategories()
-            setCategories(data)
-        } catch {
-            setError('Failed to load categories.')
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    async function createCategory(data: CreateCategoryRequest) {
-        const created = await createCategoryRequest(data)
-        setCategories((prev) => ({
-            ...prev,
-            [groupKey(created.transactionType)]: [
-                ...prev[groupKey(created.transactionType)],
-                created,
-            ],
-        }))
-    }
-
-    async function updateCategory(id: string, data: UpdateCategoryRequest) {
-        const updated = await updateCategoryRequest(id, data)
-        setCategories((prev) => mapReplace(prev, id, updated))
-    }
-
-    async function deleteCategory(id: string) {
-        await deleteCategoryRequest(id)
-        setCategories((prev) => mapRemove(prev, id))
-    }
-
-    async function deleteCategoryAndMove(id: string, targetId: string) {
-        await deleteCategoryAndMoveRequest(id, targetId)
-        setCategories((prev) => mapRemove(prev, id))
-    }
-
-    async function mergeCategories(data: MergeCategoriesRequest) {
-        const result = await mergeCategoriesRequest(data)
-        setCategories((prev) => {
-            let next = prev
-            data.mergingCategoryIds.forEach((id) => {
-                next = mapRemove(next, id)
-            })
-            return mapReplace(next, result.id, result)
-        })
-    }
-
-    useEffect(() => {
-        if (!user) return
-        void fetchCategories()
-    }, [user])
+    const {
+        data: categories = { income[], expenses: [] , transfer: []},
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ['categories', user?.id],
+        queryFn: getCategories,
+        enabled: !!user,
+    })
 
     const allCategories: Category[] = [
         ...categories.income,
@@ -86,16 +34,55 @@ export function useCategories() {
         ...categories.transfer,
     ]
 
+    const createCategoryMutation = useMutation({
+        mutationFn: createCategoryRequest,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+        },
+    })
+
+    const updateCategoryMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: UpdateCategoryRequest }) =>
+            updateCategoryRequest(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+        },
+    })
+
+    const deleteCategoryMutation = useMutation({
+        mutationFn: (id: string) => deleteCategoryRequest(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+        },
+    })
+
+    const deleteCategoryAndMoveMutation = useMutation({
+        mutationFn: ({ id, targetId }: { id: string; targetId: string }) =>
+            deleteCategoryAndMoveRequest(id, targetId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['transactions'] }) // Also refetch transactions
+        },
+    })
+
+    const mergeCategoriesMutation = useMutation({
+        mutationFn: mergeCategoriesRequest,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories'] })
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        },
+    })
+
     return {
         categories,
         allCategories,
         isLoading,
-        error,
-        createCategory,
-        updateCategory,
-        deleteCategory,
-        deleteCategoryAndMove,
-        mergeCategories,
+        error: error?.message ?? '',
+        createCategory: createCategoryMutation.mutate,
+        updateCategory: updateCategoryMutation.mutate,
+        deleteCategory: deleteCategoryMutation.mutate,
+        deleteCategoryAndMove: deleteCategoryAndMoveMutation.mutate,
+        mergeCategories: mergeCategoriesMutation.mutate,
     }
 }
 
@@ -107,18 +94,3 @@ function groupKey(type: string): GroupKey {
     return 'transfer'
 }
 
-function mapReplace(prev: CategoriesGrouped, id: string, updated: Category): CategoriesGrouped {
-    const key = groupKey(updated.transactionType)
-    return {
-        ...prev,
-        [key]: prev[key].map((c) => (c.id === id ? updated : c)),
-    }
-}
-
-function mapRemove(prev: CategoriesGrouped, id: string): CategoriesGrouped {
-    return {
-        income: prev.income.filter((c) => c.id !== id),
-        expenses: prev.expenses.filter((c) => c.id !== id),
-        transfer: prev.transfer.filter((c) => c.id !== id),
-    }
-}

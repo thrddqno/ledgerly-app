@@ -19,6 +19,13 @@ export async function createWallet(data: WalletRequest): Promise<Wallet> {
     const response = await api.post('/api/v1/wallet', data)
     return response.data
 }
+// PATCH /api/v1/wallet/reorder
+export async function reorderWallets(walletIds: string[]) {
+    const response = await api.patch('/wallets/reorder', {
+        walletIds,
+    })
+    return response.data
+}
 
 // POST /api/v1/wallet
 export async function updateWallet(id: string, data: WalletRequest): Promise<Wallet> {

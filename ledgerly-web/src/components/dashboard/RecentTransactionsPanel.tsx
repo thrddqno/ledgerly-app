@@ -1,12 +1,12 @@
 import type { Transaction } from '../../types/transaction.ts'
 import { formatDate, formatTime } from '../../utils/formatter/dateFormatters.ts'
 import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
-import { useWallets } from '../../context/WalletContext.tsx'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { parseIcon } from '../../utils/parseIcon.ts'
 import { ChevronRight, PackageOpen } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { Wallet } from '../../types/wallet.ts'
+import { useWallets } from '../../hooks/useWallets.ts'
 
 interface Props {
     transactions: Transaction[]

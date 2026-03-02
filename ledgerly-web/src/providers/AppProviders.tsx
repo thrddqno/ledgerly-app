@@ -1,23 +1,26 @@
-import { WalletProvider } from '../context/WalletContext.tsx'
 import { AuthProvider } from '../context/AuthenticationContext.tsx'
 import { ModalProvider } from '../context/ModalContext.tsx'
-import { CategoryProvider } from '../context/CategoryContext.tsx'
-import { TransactionProvider } from '../context/TransactionContext.tsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 interface Props {
     children: React.ReactNode
 }
 
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            retry: 1,
+        },
+    },
+})
+
 export default function AppProviders({ children }: Props) {
     return (
-        <AuthProvider>
-            <WalletProvider>
-                <CategoryProvider>
-                    <TransactionProvider>
-                        <ModalProvider>{children}</ModalProvider>
-                    </TransactionProvider>
-                </CategoryProvider>
-            </WalletProvider>
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <ModalProvider>{children}</ModalProvider>
+            </AuthProvider>
+        </QueryClientProvider>
     )
 }

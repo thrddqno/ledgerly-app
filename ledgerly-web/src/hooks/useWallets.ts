@@ -1,53 +1,66 @@
-// hooks/useWallets.ts
-import { useEffect, useState } from 'react'
 import {
     getWalletsDetailed,
     createWallet as createWalletRequest,
     updateWallet as updateWalletRequest,
     deleteWallet as deleteWalletRequest,
+    reorderWallets as reorderWalletRequest,
 } from '../api/wallet.ts'
-import type { Wallet, WalletRequest } from '../types/wallet.ts'
+import type { WalletRequest } from '../types/wallet.ts'
 import { useAuth } from '../context/AuthenticationContext.tsx'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useWallets() {
-    const [wallets, setWallets] = useState<Wallet[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState('')
+    const queryClient = useQueryClient()
     const { user } = useAuth()
 
-    async function fetchWallets() {
-        setIsLoading(true)
-        try {
-            const data = await getWalletsDetailed()
-            setWallets(data)
-        } catch (e) {
-            setError('Failed to load wallets.')
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    const {
+        data: wallets = [],
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ['wallets', user?.id],
+        queryFn: getWalletsDetailed,
+        enabled: !!user,
+    })
 
-    async function createWallet(data: WalletRequest) {
-        const created = await createWalletRequest(data)
-        setWallets((prev) => [...prev, created])
-    }
+    const createWalletMutation = useMutation({
+        mutationFn: createWalletRequest,
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        },
+    })
 
-    async function updateWallet(id: string, data: WalletRequest) {
-        const updated = await updateWalletRequest(id, data)
-        setWallets((prev) => prev.map((w) => (w.id === id ? updated : w)))
-    }
+    const reorderWalletsMutation = useMutation({
+        mutationFn: (walletIds: string[]) => reorderWalletRequest(walletIds),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        },
+    })
 
-    async function deleteWallet(id: string) {
-        await deleteWalletRequest(id)
-        setWallets((prev) => prev.filter((w) => w.id !== id))
-    }
+    const updateWalletMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string; data: WalletRequest }) =>
+            updateWalletRequest(id, data),
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        },
+    })
 
-    useEffect(() => {
-        if (!user) return
-        void fetchWallets()
-    }, [user])
-
+    const deleteWalletMutation = useMutation({
+        mutationFn: deleteWalletRequest,
+        onSuccess: async () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        },
+    })
     const totalBalance = wallets.reduce((sum, w) => sum + w.startingBalance, 0)
 
-    return { wallets, isLoading, error, totalBalance, createWallet, updateWallet, deleteWallet }
+    return {
+        wallets,
+        isLoading,
+        error: error?.message ?? '',
+        totalBalance,
+        createWallet: createWalletMutation.mutate,
+        reorderWallets: reorderWalletsMutation.mutate,
+        updateWallet: updateWalletMutation.mutate,
+        deleteWallet: deleteWalletMutation.mutate,
+    }
 }

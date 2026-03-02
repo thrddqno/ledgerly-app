@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
     getTransactions,
     getTransactionsByWallet,
@@ -10,140 +9,108 @@ import {
     deleteTransfer as deleteTransferRequest,
 } from '../api/transaction.ts'
 import type {
-    Transaction,
     TransactionRequest,
     TransferRequest,
     UpdateTransferRequest,
-    CursorPagedTransactionResponse,
 } from '../types/transaction.ts'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
-export function useTransactions() {
-    const [transactions, setTransactions] = useState<Transaction[]>([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState('')
-    const [nextCursor, setNextCursor] = useState<string | null>(null)
-    const [hasNext, setHasNext] = useState(false)
+interface RequestParameters {
+    walletId?: string
+    startDate?: string
+    endDate?: string
+    size?: number
+}
 
-    function applyPage(page: CursorPagedTransactionResponse, reset: boolean) {
-        setTransactions((prev) => {
-            const incoming = reset ? page.data : [...prev, ...page.data]
-            const seen = new Set<string>()
-            return incoming.filter((tx) => {
-                if (seen.has(tx.id)) return false
-                seen.add(tx.id)
-                return true
-            })
+export function useTransactions(options: RequestParameters = {}) {
+    const { walletId, startDate, endDate, size } = options
+    const queryClient = useQueryClient()
+
+    const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
+        useInfiniteQuery({
+            queryKey: ['transactions', { walletId, startDate, endDate, size }],
+            queryFn: ({ pageParam }) => {
+                const params = {
+                    cursor: pageParam,
+                    startDate,
+                    endDate,
+                    size,
+                }
+                return walletId
+                    ? getTransactionsByWallet(walletId, params)
+                    : getTransactions(params)
+            },
+            getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
+            initialPageParam: undefined as string | undefined,
         })
-        setNextCursor(page.nextCursor)
-        setHasNext(page.hasNext)
-    }
 
-    async function fetchTransactions(
-        params?: {
-            cursor?: string
-            startDate?: string
-            endDate?: string
-            size?: number
+    const transactions = data?.pages.flatMap((page) => page.data) ?? []
+
+    const createTransactionMutation = useMutation({
+        mutationFn: ({ walletId, body }: { walletId: string; body: TransactionRequest }) =>
+            createTransactionRequest(walletId, body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
         },
-        reset = true
-    ) {
-        setIsLoading(true)
-        try {
-            const data = await getTransactions(params)
-            applyPage(data, reset)
-        } catch {
-            setError('Failed to load transactions.')
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    })
 
-    async function fetchTransactionsByWallet(
-        walletId: string,
-        params?: {
-            cursor?: string
-            startDate?: string
-            endDate?: string
-            size?: number
+    const updateTransactionMutation = useMutation({
+        mutationFn: ({
+            walletId,
+            transactionId,
+            body,
+        }: {
+            walletId: string
+            transactionId: string
+            body: TransactionRequest
+        }) => updateTransactionRequest(walletId, transactionId, body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
         },
-        reset = true
-    ) {
-        setIsLoading(true)
-        try {
-            const data = await getTransactionsByWallet(walletId, params)
-            applyPage(data, reset)
-        } catch {
-            setError('Failed to load transactions.')
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    })
 
-    async function loadMore(
-        walletId?: string,
-        params?: {
-            startDate?: string
-            endDate?: string
-            size?: number
-        }
-    ) {
-        if (!hasNext || !nextCursor || isLoading) return
-        const cursor = nextCursor
-        if (walletId) {
-            await fetchTransactionsByWallet(walletId, { ...params, cursor }, false)
-        } else {
-            await fetchTransactions({ ...params, cursor }, false)
-        }
-    }
+    const deleteTransactionMutation = useMutation({
+        mutationFn: ({ walletId, transactionId }: { walletId: string; transactionId: string }) =>
+            deleteTransactionRequest(walletId, transactionId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        },
+    })
 
-    async function createTransaction(walletId: string, body: TransactionRequest) {
-        const created = await createTransactionRequest(walletId, body)
-        setTransactions((prev) => [created, ...prev])
-    }
+    const createTransferMutation = useMutation({
+        mutationFn: (body: TransferRequest) => createTransferRequest(body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        },
+    })
 
-    async function updateTransaction(
-        walletId: string,
-        transactionId: string,
-        body: TransactionRequest
-    ) {
-        const updated = await updateTransactionRequest(walletId, transactionId, body)
-        setTransactions((prev) => prev.map((t) => (t.id === transactionId ? updated : t)))
-    }
+    const updateTransferMutation = useMutation({
+        mutationFn: ({ transferId, body }: { transferId: string; body: UpdateTransferRequest }) =>
+            updateTransferRequest(transferId, body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        },
+    })
 
-    async function deleteTransaction(walletId: string, transactionId: string) {
-        await deleteTransactionRequest(walletId, transactionId)
-        setTransactions((prev) => prev.filter((t) => t.id !== transactionId))
-    }
-
-    async function createTransfer(body: TransferRequest) {
-        const created = await createTransferRequest(body)
-        setTransactions((prev) => [...created, ...prev])
-    }
-
-    async function updateTransfer(transferId: string, body: UpdateTransferRequest) {
-        const updated = await updateTransferRequest(transferId, body)
-        setTransactions((prev) => prev.map((t) => updated.find((u) => u.id === t.id) ?? t))
-    }
-
-    async function deleteTransfer(transferId: string) {
-        await deleteTransferRequest(transferId)
-        setTransactions((prev) => prev.filter((t) => t.transferId !== transferId))
-    }
+    const deleteTransferMutation = useMutation({
+        mutationFn: (transferId: string) => deleteTransferRequest(transferId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+        },
+    })
 
     return {
         transactions,
         isLoading,
-        error,
-        nextCursor,
-        hasNext,
-        fetchTransactions,
-        fetchTransactionsByWallet,
-        loadMore,
-        createTransaction,
-        updateTransaction,
-        deleteTransaction,
-        createTransfer,
-        updateTransfer,
-        deleteTransfer,
+        error: error?.message ?? '',
+        createTransaction: createTransactionMutation.mutate,
+        updateTransaction: updateTransactionMutation.mutate,
+        deleteTransaction: deleteTransactionMutation.mutate,
+        createTransfer: createTransferMutation.mutate,
+        updateTransfer: updateTransferMutation.mutate,
+        deleteTransfer: deleteTransferMutation.mutate,
+        hasMore: hasNextPage,
+        isLoadingMore: isFetchingNextPage,
+        loadMore: fetchNextPage,
     }
 }

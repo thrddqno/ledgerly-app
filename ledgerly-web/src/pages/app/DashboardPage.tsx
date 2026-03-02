@@ -1,11 +1,11 @@
 import SideBar from '../../components/layout/SideBar.tsx'
 import BalanceSummary from '../../components/dashboard/BalanceSummary.tsx'
-import { useWallets } from '../../context/WalletContext.tsx'
 import WalletList from '../../components/dashboard/WalletList.tsx'
 import RecentTransactionsPanel from '../../components/dashboard/RecentTransactionsPanel.tsx'
-import { useTransactions } from '../../context/TransactionContext.tsx'
-import { useEffect, useState } from 'react'
 import type { Wallet } from '../../types/wallet.ts'
+import { useTransactions } from '../../hooks/useTransactions.ts'
+import { useState } from 'react'
+import { useWallets } from '../../hooks/useWallets.ts'
 
 const THIRTY_DAYS_AGO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
@@ -14,26 +14,13 @@ const TODAY = new Date().toISOString().split('T')[0]
 export default function DashboardPage() {
     const [selectedWallet, setSelectedWallet] = useState<Wallet | null>(null)
     const { wallets } = useWallets()
-    const {
-        transactions,
-        isLoading,
-        hasNext,
-        fetchTransactions,
-        fetchTransactionsByWallet,
-        loadMore,
-    } = useTransactions()
 
-    useEffect(() => {
-        if (selectedWallet) {
-            void fetchTransactionsByWallet(selectedWallet.id, {
-                size: 20,
-                startDate: THIRTY_DAYS_AGO,
-                endDate: TODAY,
-            })
-        } else {
-            void fetchTransactions({ size: 20, startDate: THIRTY_DAYS_AGO, endDate: TODAY })
-        }
-    }, [selectedWallet])
+    const { transactions, isLoading, hasMore, loadMore } = useTransactions({
+        walletId: selectedWallet?.id,
+        startDate: THIRTY_DAYS_AGO,
+        endDate: TODAY,
+        size: 20,
+    })
 
     return (
         <div className="bg-base flex h-screen w-screen justify-between overflow-hidden">
@@ -50,16 +37,7 @@ export default function DashboardPage() {
                     transactions={transactions}
                     isLoading={isLoading}
                     selectedWallet={selectedWallet}
-                    onLoadMore={
-                        hasNext
-                            ? () =>
-                                  loadMore(selectedWallet?.id, {
-                                      startDate: THIRTY_DAYS_AGO,
-                                      endDate: TODAY,
-                                      size: 20,
-                                  })
-                            : undefined
-                    }
+                    onLoadMore={hasMore ? () => loadMore() : undefined}
                 />
             </section>
         </div>

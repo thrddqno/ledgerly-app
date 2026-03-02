@@ -1,6 +1,6 @@
 import Modal from '../common/Modal.tsx'
 import { useState } from 'react'
-import { useWallets } from '../../context/WalletContext.tsx'
+import { useWallets } from '../../hooks/useWallets.ts'
 
 interface Props {
     onClose: () => void

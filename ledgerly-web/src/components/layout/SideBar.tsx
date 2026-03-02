@@ -13,13 +13,13 @@ import {
 } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { useWallets } from '../../context/WalletContext'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../../context/AuthenticationContext.tsx'
 import { PromptLogoutModal } from '../modals/PromptLogoutModal.tsx'
+import { useWallets } from '../../hooks/useWallets.ts'
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Your Ledger', path: '/dashboard' },

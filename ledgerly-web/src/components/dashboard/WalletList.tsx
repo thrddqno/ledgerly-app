@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react'
 import WalletCard from './WalletCard.tsx'
-import { useWallets } from '../../context/WalletContext.tsx'
 import { PackageOpen } from 'lucide-react'
 import type { Wallet } from '../../types/wallet.ts'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
+import { useWallets } from '../../hooks/useWallets.ts'
 
 interface Props {
     onWalletSelect?: (wallet: Wallet | null) => void
@@ -65,7 +65,7 @@ export default function WalletList({ onWalletSelect }: Props) {
                 {wallets.length < MAX_WALLETS && (
                     <button
                         onClick={() => setShowModal(true)}
-                        className="border-accent text-accent hover:bg-accent/10 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors duration-150"
+                        className="bg-accent hover:bg-accent-hover cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-colors duration-150"
                     >
                         + Add Wallet
                     </button>
