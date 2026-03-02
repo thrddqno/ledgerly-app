@@ -1,19 +1,14 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { AddWalletModal } from '../components/modals/AddWalletModal.tsx'
+import { PromptLogoutModal } from '../components/modals/PromptLogoutModal.tsx'
 
 // 1. Register every modal type + its payload shape here
-type ModalConfig =
-    | { type: 'addWallet'; payload?: never }
-    | { type: 'addTransaction'; payload?: never }
-// When you need to pass data, e.g. editing:
-// | { type: 'editWallet'; payload: WalletDetail }
-// | { type: 'editTransaction'; payload: TransactionDetail }
+type ModalConfig = { type: 'addWallet'; payload?: never } | { type: 'logout'; payload?: never }
 
 type ModalType = ModalConfig['type']
 
 interface ModalContextType {
     openModal: (config: ModalConfig) => void
-    closeModal: () => void
 }
 
 const ModalContext = createContext<ModalContextType | null>(null)
@@ -24,11 +19,17 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     const openModal = (config: ModalConfig) => setActive(config)
     const closeModal = () => setActive(null)
 
-    return (
-        <ModalContext.Provider value={{ openModal, closeModal }}>
-            {children}
+    const value = useMemo(
+        () => ({
+            openModal,
+        }),
+        []
+    )
 
-            {/* 2. Register modal rendering here */}
+    return (
+        <ModalContext.Provider value={value}>
+            {children}
+            {active?.type === 'logout' && <PromptLogoutModal onClose={closeModal} />}
             {active?.type === 'addWallet' && <AddWalletModal onClose={closeModal} />}
         </ModalContext.Provider>
     )
