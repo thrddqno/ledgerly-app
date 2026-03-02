@@ -34,6 +34,9 @@ public class Wallet {
     @Column(nullable = false)
     private BigDecimal startingBalance = BigDecimal.ZERO;
 
+    @Column(nullable = false)
+    private Integer sortOrder;
+
     @Builder.Default
     @Column(nullable = false)
     private BigDecimal cachedTransactions = BigDecimal.ZERO;
