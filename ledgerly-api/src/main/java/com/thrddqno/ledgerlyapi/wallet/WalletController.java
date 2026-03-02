@@ -1,6 +1,7 @@
 package com.thrddqno.ledgerlyapi.wallet;
 
 import com.thrddqno.ledgerlyapi.user.User;
+import com.thrddqno.ledgerlyapi.wallet.dto.ReorderWalletRequest;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletDetailsResponse;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletRequest;
 import com.thrddqno.ledgerlyapi.wallet.dto.WalletResponse;
@@ -39,6 +40,15 @@ public class WalletController {
     @GetMapping("/details")
     public ResponseEntity<List<WalletDetailsResponse>> getAllWalletDetails(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(walletService.getAllWalletDetails(user));
+    }
+
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorderWallets(
+            @AuthenticationPrincipal User user,
+            @RequestBody ReorderWalletRequest request
+    ) {
+        walletService.reorderWallets(user, request);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
