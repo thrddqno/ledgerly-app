@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react'
 import type { Wallet } from '../../types/wallet.ts'
 import { useWallets } from '../../hooks/useWallets.ts'
 import { useNavigate } from 'react-router-dom'
+import { useInfiniteScroll } from '../../hooks/useInfiniteScrollOptions.ts'
 
 interface Props {
     transactions: Transaction[]
@@ -43,18 +44,7 @@ export default function RecentTransactionsPanel({
     const navigate = useNavigate()
 
     const scrollRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        const el = scrollRef.current
-        if (!el) return
-        const handleScroll = () => {
-            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
-                onLoadMore?.()
-            }
-        }
-        el.addEventListener('scroll', handleScroll)
-        return () => el.removeEventListener('scroll', handleScroll)
-    }, [onLoadMore])
+    useInfiniteScroll(onLoadMore, isLoading, scrollRef)
 
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: 0 })
