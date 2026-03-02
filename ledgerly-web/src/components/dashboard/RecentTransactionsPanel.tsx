@@ -3,7 +3,7 @@ import { formatDate, formatTime } from '../../utils/formatter/dateFormatters.ts'
 import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { parseIcon } from '../../utils/parseIcon.ts'
-import { ChevronRight, PackageOpen } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRight, PackageOpen } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { Wallet } from '../../types/wallet.ts'
 import { useWallets } from '../../hooks/useWallets.ts'
@@ -14,6 +14,7 @@ interface Props {
     onLoadMore?: () => void
     resetScroll: string
     selectedWallet: Wallet | null
+    onClose?: () => void
 }
 
 function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
@@ -34,6 +35,7 @@ export default function RecentTransactionsPanel({
     onLoadMore,
     resetScroll,
     selectedWallet,
+    onClose,
 }: Props) {
     const { wallets } = useWallets()
     const groups = groupByDate(transactions)
@@ -60,13 +62,25 @@ export default function RecentTransactionsPanel({
         <div className="flex h-full flex-col overflow-hidden">
             {/* Pinned header */}
             <div className="bg-surface border-border flex shrink-0 items-center justify-between border-b px-6 py-4">
-                <div className="flex flex-col gap-1">
-                    <h2 className="text-text-primary text-content text-sm font-semibold">
-                        Recent Transactions
-                    </h2>
-                    <p className="text-text-secondary text-subtle text-xs">
-                        {selectedWallet?.name || 'All wallets'} · Last 30 days
-                    </p>
+                <div className="flex gap-2">
+                    {onClose != null && (
+                        <button
+                            onClick={() => {
+                                onClose()
+                            }}
+                            className="top-4 left-4 z-10 text-2xl lg:hidden"
+                        >
+                            <ChevronLeftIcon />
+                        </button>
+                    )}
+                    <div className="flex flex-col gap-1">
+                        <h2 className="text-text-primary text-content text-sm font-semibold">
+                            Recent Transactions
+                        </h2>
+                        <p className="text-text-secondary text-subtle text-xs">
+                            {selectedWallet?.name || 'All wallets'} · Last 30 days
+                        </p>
+                    </div>
                 </div>
 
                 {selectedWallet && (
