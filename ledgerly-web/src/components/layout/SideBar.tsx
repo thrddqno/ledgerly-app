@@ -20,8 +20,11 @@ export default function SideBar() {
 
     return (
         <aside className="bg-surface border-border flex w-65 shrink-0 flex-col border-r px-4 py-6">
-            <div className="mb-9 flex justify-center p-2">
-                <span className="text-accent text-3xl font-extrabold">Ledgerly</span>
+            <div className="mb-9 flex flex-col items-center justify-center gap-1 p-2">
+                <span className="text-accent text-4xl font-extrabold">Ledgerly</span>
+                <span className="text-text-primary text-xs font-extrabold">
+                    Personal Finance Tracker
+                </span>
             </div>
 
             <nav className="flex flex-1 flex-col gap-2">
