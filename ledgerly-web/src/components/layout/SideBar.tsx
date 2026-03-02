@@ -12,13 +12,14 @@ import {
     WalletCards,
 } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthenticationContext.tsx'
 import { useState } from 'react'
 import { useWallets } from '../../context/WalletContext'
 import { AddWalletModal } from '../modals/AddWalletModal.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWallet } from '@fortawesome/free-solid-svg-icons'
+import { useAuth } from '../../context/AuthenticationContext.tsx'
+import { PromptLogoutModal } from '../modals/PromptLogoutModal.tsx'
 
 const navItems = [
     { icon: LayoutDashboard, label: 'Your Ledger', path: '/dashboard' },
@@ -29,16 +30,12 @@ const navItems = [
 export default function SideBar() {
     const navigate = useNavigate()
     const location = useLocation()
-    const { user, logout } = useAuth()
     const { wallets } = useWallets()
     const [walletsOpen, setWalletsOpen] = useState(false)
-    const [showModal, setShowModal] = useState(false)
+    const [showWalletModal, setShowWalletModal] = useState(false)
     const { theme, toggleTheme } = useTheme()
-
-    async function handleLogout() {
-        await logout()
-        navigate('/auth')
-    }
+    const [showLogoutModal, setShowLogoutModal] = useState(false)
+    const { user } = useAuth()
 
     return (
         <aside className="bg-surface border-border flex w-65 shrink-0 flex-col border-r px-4 py-6">
@@ -87,7 +84,7 @@ export default function SideBar() {
                                             ))}
                                             {wallets.length < 10 && (
                                                 <button
-                                                    onClick={() => setShowModal(true)}
+                                                    onClick={() => setShowWalletModal(true)}
                                                     className="text-text-muted hover:text-accent-hover hover:bg-accent/10 flex items-center gap-1.5 rounded-md px-2 py-2 text-sm transition-all hover:cursor-pointer hover:font-medium"
                                                 >
                                                     <Plus size={12} />
@@ -138,15 +135,15 @@ export default function SideBar() {
                         {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
                     </button>
                     <button
-                        onClick={handleLogout}
+                        onClick={() => setShowLogoutModal(true)}
                         className="text-text-muted hover:text-expense cursor-pointer transition-colors"
                     >
                         <LogOut size={15} />
                     </button>
                 </div>
             </div>
-
-            {showModal && <AddWalletModal onClose={() => setShowModal(false)} />}
+            {showLogoutModal && <PromptLogoutModal onClose={() => setShowLogoutModal(false)} />}
+            {showWalletModal && <AddWalletModal onClose={() => setShowWalletModal(false)} />}
         </aside>
     )
 }
