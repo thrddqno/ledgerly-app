@@ -27,6 +27,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query("""
             SELECT t FROM Transaction t
+            JOIN FETCH t.category c
+            LEFT JOIN FETCH c.user
+            JOIN FETCH t.wallet w
             WHERE t.wallet = :wallet
               AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
               AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
@@ -43,12 +46,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     );
 
     @Query("""
-                SELECT t FROM Transaction t
-                WHERE t.wallet.user.id = :userId
-                  AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
-                  AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
-                ORDER BY t.date DESC, t.id DESC
-                LIMIT :size
+            SELECT t FROM Transaction t
+            JOIN FETCH t.category c
+            LEFT JOIN FETCH c.user
+            JOIN FETCH t.wallet w
+                        WHERE t.wallet.user.id = :userId
+                          AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
+                          AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
+                        ORDER BY t.date DESC, t.id DESC
+                        LIMIT :size
             """)
     List<Transaction> findAllTransactions(
             @Param("userId") UUID userId,
