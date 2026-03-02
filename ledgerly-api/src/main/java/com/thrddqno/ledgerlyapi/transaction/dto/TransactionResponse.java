@@ -15,7 +15,9 @@ public record TransactionResponse(
         LocalDate date,
         UUID walletId,
         UUID transferId,
-        UUID relatedTransactionId
+        UUID relatedTransactionId,
+        UUID relatedWalletId,
+        boolean isIncoming
 
 ) {
     @JsonProperty

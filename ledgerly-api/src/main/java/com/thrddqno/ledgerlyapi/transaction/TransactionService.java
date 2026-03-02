@@ -185,7 +185,7 @@ public class TransactionService {
 
         //from source
         Transaction outgoing = Transaction.builder()
-                .notes("Transfer to " + target.getName())
+                .notes(request.notes())
                 .amount(request.amount())
                 .date(request.date())
                 .transactionType(TransactionType.TRANSFER)
@@ -196,7 +196,7 @@ public class TransactionService {
                 .build();
         //to target
         Transaction incoming = Transaction.builder()
-                .notes("Transfer from " + source.getName())
+                .notes(request.notes())
                 .amount(request.amount())
                 .date(request.date())
                 .transactionType(TransactionType.TRANSFER)
@@ -286,12 +286,12 @@ public class TransactionService {
 
         outgoing.setAmount(request.amount());
         outgoing.setDate(request.date());
-        outgoing.setNotes("Transfer to " + target.getName());
+        outgoing.setNotes(request.notes());
         outgoing.setWallet(source);
 
         incoming.setAmount(request.amount());
         incoming.setDate(request.date());
-        incoming.setNotes("Transfer from " + source.getName());
+        incoming.setNotes(request.notes());
         incoming.setWallet(target);
 
         source.applyTransfer(outgoing);

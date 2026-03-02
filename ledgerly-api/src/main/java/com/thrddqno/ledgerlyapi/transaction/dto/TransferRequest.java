@@ -7,6 +7,7 @@ import java.util.UUID;
 public record TransferRequest(
         UUID sourceWalletId,
         UUID targetWalletId,
+        String notes,
         BigDecimal amount,
         LocalDate date
 ) {
