@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import {
     getCategories,
     createCategory as createCategoryRequest,
@@ -8,10 +7,7 @@ import {
     mergeCategories as mergeCategoriesRequest,
 } from '../api/category.ts'
 import { useAuth } from '../context/AuthenticationContext.tsx'
-import type {
-    Category,
-    UpdateCategoryRequest,
-} from '../types/category.ts'
+import type { Category, UpdateCategoryRequest } from '../types/category.ts'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useCategories() {
@@ -19,7 +15,7 @@ export function useCategories() {
     const { user } = useAuth()
 
     const {
-        data: categories = { income[], expenses: [] , transfer: []},
+        data: categories = { income: [], expenses: [], transfer: [] },
         isLoading,
         error,
     } = useQuery({
@@ -93,4 +89,3 @@ function groupKey(type: string): GroupKey {
     if (type === 'EXPENSE') return 'expenses'
     return 'transfer'
 }
-
