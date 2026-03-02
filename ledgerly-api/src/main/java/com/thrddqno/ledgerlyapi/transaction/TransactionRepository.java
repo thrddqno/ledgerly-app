@@ -26,19 +26,37 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     int reassignTransactions(@Param("category") Category category, @Param("targetCategories") List<Category> targetCategories);
 
     @Query("""
-SELECT t FROM Transaction t
-WHERE t.wallet = :wallet
-  AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
-  AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
-ORDER BY t.date DESC, t.id DESC
-""")
+            SELECT t FROM Transaction t
+            WHERE t.wallet = :wallet
+              AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
+              AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
+            ORDER BY t.date DESC, t.id DESC
+            LIMIT :size
+            """)
     List<Transaction> findTransactionsByWallet(
             @Param("wallet") Wallet wallet,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("lastDate") LocalDate lastDate,
             @Param("lastId") UUID lastId,
-            Pageable pageable
+            @Param("size") int size
+    );
+
+    @Query("""
+                SELECT t FROM Transaction t
+                WHERE t.wallet.user.id = :userId
+                  AND (CAST(:startDate AS localdate) IS NULL OR CAST(:endDate AS localdate) IS NULL OR t.date BETWEEN :startDate AND :endDate)
+                  AND (CAST(:lastDate AS localdate) IS NULL OR t.date < :lastDate OR (t.date = :lastDate AND t.id < :lastId))
+                ORDER BY t.date DESC, t.id DESC
+                LIMIT :size
+            """)
+    List<Transaction> findAllTransactions(
+            @Param("userId") UUID userId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("lastDate") LocalDate lastDate,
+            @Param("lastId") UUID lastId,
+            @Param("size") int size
     );
 
     //normal pagination

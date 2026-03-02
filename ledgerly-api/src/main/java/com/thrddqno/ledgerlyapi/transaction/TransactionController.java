@@ -23,14 +23,25 @@ public class TransactionController {
      * KEYSET PAGINATION with DATE FILTER
      */
     @GetMapping("/{walletId}/keyset")
-    public ResponseEntity<CursorPagedTransactionResponse<TransactionResponse>> getNextTransactionsWithDateFilter(
+    public ResponseEntity<CursorPagedTransactionResponse<TransactionResponse>> getTransactionsByWallet(
             @AuthenticationPrincipal User user,
             @PathVariable UUID walletId,
             @RequestParam(required = false) String cursor,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "20") @Min(1) int size) {
-        CursorPagedTransactionResponse<TransactionResponse> response = transactionService.getNextTransactions(user, walletId, cursor, startDate, endDate, size);
+        CursorPagedTransactionResponse<TransactionResponse> response = transactionService.getNextTransactionsByWallet(user, walletId, cursor, startDate, endDate, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/keyset")
+    public ResponseEntity<CursorPagedTransactionResponse<TransactionResponse>> getTransactions(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) String cursor,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "20") @Min(1) int size) {
+        CursorPagedTransactionResponse<TransactionResponse> response = transactionService.getNextTransactions(user, cursor, startDate, endDate, size);
         return ResponseEntity.ok(response);
     }
 

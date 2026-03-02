@@ -38,7 +38,7 @@ public class TransactionService {
      * resource: https://www.youtube.com/watch?v=MOu-5B-UpCU
      */
     @Transactional
-    public CursorPagedTransactionResponse<TransactionResponse> getNextTransactions(
+    public CursorPagedTransactionResponse<TransactionResponse> getNextTransactionsByWallet(
             User user,
             UUID walletId,
             String cursor,
@@ -71,9 +71,39 @@ public class TransactionService {
         }
 
 
-        Pageable limit = PageRequest.of(0, size);
         List<Transaction> transactions = transactionRepository.findTransactionsByWallet(
-                wallet, startDate, endDate, lastDate, lastId, limit);
+                wallet, startDate, endDate, lastDate, lastId, size);
+
+        return transactionMapper.toCursorPagedTransactionResponse(transactions, size);
+    }
+
+    @Transactional
+    public CursorPagedTransactionResponse<TransactionResponse> getNextTransactions(
+            User user,
+            String cursor,
+            LocalDate startDate,
+            LocalDate endDate,
+            int size
+    ) {
+
+        LocalDate lastDate = null;
+        UUID lastId = null;
+        if (cursor != null && !cursor.isBlank()) {
+            String decoded = new String(Base64.getUrlDecoder().decode(cursor), StandardCharsets.UTF_8);
+            String[] parts = decoded.split("\\|");
+            if (parts.length != 2){
+                throw new BusinessValidationException(
+                        "Invalid Cursor",
+                        "INVALID_CURSOR",
+                        HttpStatus.BAD_REQUEST
+                );
+            }
+            lastDate = LocalDate.parse(parts[0]);
+            lastId = UUID.fromString(parts[1]);
+        }
+
+        List<Transaction> transactions = transactionRepository.findAllTransactions(
+                user.getId(), startDate, endDate, lastDate, lastId, size);
 
         return transactionMapper.toCursorPagedTransactionResponse(transactions, size);
     }
