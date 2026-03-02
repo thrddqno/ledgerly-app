@@ -21,7 +21,7 @@ export async function createWallet(data: WalletRequest): Promise<Wallet> {
 }
 // PATCH /api/v1/wallet/reorder
 export async function reorderWallets(walletIds: string[]) {
-    const response = await api.patch('/wallets/reorder', {
+    const response = await api.patch('api/v1/wallet/reorder', {
         walletIds,
     })
     return response.data
