@@ -1,5 +1,5 @@
 import type { Transaction } from '../../types/transaction.ts'
-import { formatDate, formatTime } from '../../utils/formatter/dateFormatters.ts'
+import { formatDate } from '../../utils/formatter/dateFormatters.ts'
 import { formatCurrency } from '../../utils/formatter/currencyFormatter.ts'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { parseIcon } from '../../utils/parseIcon.ts'
@@ -7,6 +7,7 @@ import { ChevronLeftIcon, ChevronRight, PackageOpen } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import type { Wallet } from '../../types/wallet.ts'
 import { useWallets } from '../../hooks/useWallets.ts'
+import { useNavigate } from 'react-router-dom'
 
 interface Props {
     transactions: Transaction[]
@@ -39,6 +40,7 @@ export default function RecentTransactionsPanel({
 }: Props) {
     const { wallets } = useWallets()
     const groups = groupByDate(transactions)
+    const navigate = useNavigate()
 
     const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -84,7 +86,10 @@ export default function RecentTransactionsPanel({
                 </div>
 
                 {selectedWallet && (
-                    <button className="text-accent hover:text-accent-hover flex items-center gap-1 text-xs font-bold transition-colors duration-100 hover:cursor-pointer">
+                    <button
+                        onClick={() => navigate('/wallets', { state: { wallet: selectedWallet } })}
+                        className="text-accent hover:text-accent-hover flex items-center gap-1 text-xs font-bold transition-colors duration-100 hover:cursor-pointer"
+                    >
                         View in Wallet
                         <ChevronRight className="h-4 w-5" />
                     </button>
@@ -133,7 +138,10 @@ export default function RecentTransactionsPanel({
                                     >
                                         {tx.categoryResponse && (
                                             <FontAwesomeIcon
-                                                icon={parseIcon(tx.categoryResponse.icon)}
+                                                icon={
+                                                    parseIcon(tx.categoryResponse.icon) ??
+                                                    parseIcon('fa-solid fa-circle-question')
+                                                }
                                                 className="text-sm text-white"
                                             />
                                         )}
@@ -145,12 +153,10 @@ export default function RecentTransactionsPanel({
                                             {tx.notes ?? tx.categoryResponse.name}
                                         </span>
                                         <span className="text-text-secondary mt-0.5 text-xs">
-                                            {wallets.find((w) => w.id == tx.walletId)?.name ??
-                                                'Unknown Wallet'}
+                                            {tx.notes ? tx.categoryResponse.name : ''}
                                         </span>
                                     </div>
 
-                                    {/* Right: amount + time */}
                                     <div className="text-text-muted ml-6 flex shrink-0 flex-col items-end">
                                         <span
                                             className={`text-sm font-semibold tabular-nums ${
@@ -165,7 +171,8 @@ export default function RecentTransactionsPanel({
                                             {formatCurrency(tx.amount, 'PHP')}
                                         </span>
                                         <span className="text-subtle mt-0.5 text-xs">
-                                            {formatTime(tx.date)}
+                                            {wallets.find((w) => w.id == tx.walletId)?.name ||
+                                                'Unknown Wallet'}
                                         </span>
                                     </div>
                                 </div>
