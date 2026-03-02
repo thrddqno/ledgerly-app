@@ -5,3 +5,5 @@
 *.ipr
 
 docker-compose.yml
+
+.sql
