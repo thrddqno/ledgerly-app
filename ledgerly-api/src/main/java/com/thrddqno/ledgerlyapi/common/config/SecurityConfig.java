@@ -24,17 +24,22 @@ public class SecurityConfig {
     private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(
                                 "/v3/api-docs/**",
-                                "/auth/**",
                                 "/swagger-ui.html",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "/auth/login",
+                                "/auth/register",
+                                "/auth/refresh"
                         )
-                        .permitAll().anyRequest()
+                        .permitAll()
+                        .requestMatchers("/auth/me")
+                        .authenticated()
+                        .anyRequest()
                         .authenticated())
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
