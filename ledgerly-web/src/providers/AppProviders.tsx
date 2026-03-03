@@ -1,8 +1,8 @@
-import { AuthProvider } from '../context/AuthenticationContext.tsx'
-import { ModalProvider } from '../context/ModalContext.tsx'
+import { AuthProvider } from '../common/context/AuthenticationContext.tsx'
+import { ModalProvider } from '../common/context/ModalContext.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { DeviceProvider } from '../context/DeviceContext.tsx'
-import { UIProvider } from '../context/UIContext.tsx'
+import { DeviceProvider } from '../common/context/DeviceContext.tsx'
+import { UIProvider } from '../common/context/UIContext.tsx'
 
 interface Props {
     children: React.ReactNode

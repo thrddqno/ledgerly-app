@@ -1,8 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import DashboardPage from '../pages/app/DashboardPage.tsx'
-import ProtectedRoute from '../components/common/ProtectedRoute.tsx'
-import AuthPage from '../pages/app/Auth/AuthPage.tsx'
-import WalletPage from '../pages/app/WalletPage.tsx'
+import DashboardPage from '../features/app/dashboard/pages/DashboardPage.tsx'
+import ProtectedRoute from '../common/components/ui/ProtectedRoute.tsx'
+import AuthPage from '../features/landing/auth/pages/AuthPage.tsx'
+import WalletPage from '../features/app/wallets/pages/WalletPage.tsx'
 
 function App() {
     return (

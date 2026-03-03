@@ -22,6 +22,11 @@
     --color-expense: #F43F5E;
     --color-warning: #F59E0B;
     --color-danger: #DC2626;
+
+    --breakpoint-miniphone: 0px;
+    --breakpoint-phone: 320px;
+    --breakpoint-tablet: 640px;
+    --breakpoint-desktop: 1080px;
 }
 
 [data-theme="light"] {
