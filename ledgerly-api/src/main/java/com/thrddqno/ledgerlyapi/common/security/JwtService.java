@@ -3,11 +3,16 @@ package com.thrddqno.ledgerlyapi.common.security;
 import com.thrddqno.ledgerlyapi.common.config.TokenProperties;
 import com.thrddqno.ledgerlyapi.user.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.security.Randoms;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.jboss.logging.Log4j2LoggerProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +29,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
     private final TokenProperties tokenProperties;
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
     @Value("${JWT_SECRET_KEY}")
     private String SECRET_KEY;

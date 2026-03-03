@@ -17,7 +17,7 @@ public class JwtTokenCookieService {
     public Cookie createAccessTokenCookie(String token){
         Cookie cookie = new Cookie(tokenProperties.getAccessTokenCookieName(), token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false); //set to true if deploying
         cookie.setPath("/");
         cookie.setMaxAge((int) (tokenProperties.getAccessTokenExpiry()/1000));
         return cookie;
@@ -26,7 +26,7 @@ public class JwtTokenCookieService {
     public Cookie createRefreshTokenCookie(String token){
         Cookie cookie = new Cookie(tokenProperties.getRefreshTokenCookieName(), token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/auth");
         cookie.setMaxAge((int) (tokenProperties.getRefreshTokenExpiry()/1000));
         return cookie;
@@ -35,7 +35,7 @@ public class JwtTokenCookieService {
     public Cookie nullifyTokenCookie(String cookieName, String path) {
         Cookie cookie = new Cookie(cookieName, null);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath(path);
         cookie.setMaxAge(0);
         return cookie;
