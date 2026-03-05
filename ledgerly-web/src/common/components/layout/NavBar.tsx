@@ -83,7 +83,9 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                             }}
                         >
                             {selectedWallet?.name ?? 'Wallets'}
-                            <ChevronDown className="text-text-muted/50 mt-1 h-5 w-5" />
+                            <ChevronDown
+                                className={`text-text-muted/50 ${isShowWalletCarouselOpen ? 'rotate-180' : ''} mt-1 h-5 w-5 transition-transform`}
+                            />
                         </button>
 
                         {/* WALLET CAROUSEL */}
