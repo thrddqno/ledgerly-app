@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import {
-    getMe,
-    loginRequest,
-    logoutRequest,
-    registerRequest,
-} from '../../features/landing/auth/api/authApi.ts'
+import { getMe, loginRequest, logoutRequest, registerRequest } from '../api/authApi.ts'
 
-interface User {
+export interface User {
     id: number
     firstName: string
     lastName: string
@@ -42,31 +37,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
 
     useEffect(() => {
-        let isMounted = true
+        const abortController = new AbortController()
 
         const initializeAuth = async () => {
             try {
-                const data = await getMe()
-                if (isMounted) {
-                    setIsAuthenticated(true)
-                    setUser(data)
-                }
+                const data = await getMe(abortController.signal)
+                setIsAuthenticated(true)
+                setUser(data)
             } catch (err) {
-                if (isMounted) {
-                    setIsAuthenticated(false)
-                    setUser(null)
+                // Ignore abort errors
+                if (err.name === 'AbortError' || err.name === 'CanceledError') {
+                    return
                 }
+                setIsAuthenticated(false)
+                setUser(null)
             } finally {
-                if (isMounted) {
-                    setIsLoading(false)
-                }
+                setIsLoading(false)
             }
         }
 
         initializeAuth()
 
         return () => {
-            isMounted = false
+            abortController.abort()
         }
     }, [])
 
