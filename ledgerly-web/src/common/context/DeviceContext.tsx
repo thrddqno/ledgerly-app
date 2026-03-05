@@ -38,5 +38,34 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
 export function useDevice() {
     const context = useContext(DeviceContext)
     if (!context) throw new Error('useDevice must be used within DeviceContext')
-    return context
+    const { breakpoint } = context
+
+    const currentRank = breakpoints.findIndex((b) => b.name === breakpoint)
+
+    const isLessThan = (name: BreakpointName) => {
+        const targetRank = breakpoints.findIndex((b) => b.name === name)
+        return currentRank < targetRank
+    }
+    const isGreaterThan = (name: BreakpointName) => {
+        const targetRank = breakpoints.findIndex((b) => b.name === name)
+        return currentRank > targetRank
+    }
+
+    const isGreaterThanOrEqual = (name: BreakpointName) => {
+        const targetRank = breakpoints.findIndex((b) => b.name === name)
+        return currentRank >= targetRank
+    }
+
+    const isLessThanOrEqual = (name: BreakpointName) => {
+        const targetRank = breakpoints.findIndex((b) => b.name === name)
+        return currentRank <= targetRank
+    }
+
+    return {
+        ...context,
+        isLessThan,
+        isGreaterThanOrEqual,
+        isLessThanOrEqual,
+        isGreaterThan,
+    }
 }

@@ -24,9 +24,9 @@
     --color-danger: #DC2626;
 
     --breakpoint-miniphone: 0px;
-    --breakpoint-phone: 320px;
-    --breakpoint-tablet: 640px;
-    --breakpoint-desktop: 1080px;
+    --breakpoint-phone: 640px;
+    --breakpoint-tablet: 1080px;
+    --breakpoint-desktop: 1920px;
 }
 
 [data-theme="light"] {
