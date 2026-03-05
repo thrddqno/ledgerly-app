@@ -19,14 +19,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+
+    //Fuckin' do not filter if it's these public paths
+    private static final List<String> PUBLIC_PATHS = List.of(
+            "/auth/login",
+            "/auth/register",
+            "/auth/refresh",
+            "/v3/api-docs",
+            "/swagger-ui"
+    );
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -38,7 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String email = null;
 
         if(authHeader != null && authHeader.startsWith("Bearer "))  { token =  authHeader.substring(7); logger.debug("Token from Authorization header"); }
-
 
         if(token == null && request.getCookies() != null){
             token = Arrays.stream(request.getCookies())
@@ -76,8 +92,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
                 logger.warn("Token invalid or expired for user: {}", email);
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token invalid or expired");
-                return;
             }
         } else if (token == null) {
             logger.debug("No token found in request to {}", uri);

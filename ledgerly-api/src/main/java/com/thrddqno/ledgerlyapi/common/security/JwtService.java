@@ -85,7 +85,21 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String email = extract("email", token);
-        return (email.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        boolean emailMatches = email.equals(userDetails.getUsername());
+        boolean notExpired = !isTokenExpired(token);
+
+        logger.info("Token email: {}", email);
+        logger.info("UserDetails username: {}", userDetails.getUsername());
+        logger.info("Email matches: {}", emailMatches);
+        logger.info("Token expired: {}", isTokenExpired(token));
+        logger.info("Token valid: {}", emailMatches && notExpired);
+
+        if (isTokenExpired(token)) {
+            Date expiration = extractClaim(token, Claims::getExpiration);
+            logger.warn("Token expired at: {}, current time: {}", expiration, new Date());
+        }
+
+        return emailMatches && notExpired;
     }
 
     public boolean isTokenExpired(String token){

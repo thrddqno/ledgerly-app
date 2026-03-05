@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -40,6 +42,7 @@ public class AuthenticationService {
     private final JwtTokenCookieService jwtTokenCookieService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final TokenProperties tokenProperties;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     @Transactional
     public User register(RegisterRequest registerRequest) {
@@ -92,6 +95,7 @@ public class AuthenticationService {
 
     public void logout(HttpServletRequest request, HttpServletResponse response){
         String refreshToken = extractRefreshTokenOrThrow(request);
+
         RefreshToken stored = findStoredTokenOrThrow(refreshToken);
 
         refreshTokenRepository.delete(stored);
@@ -117,7 +121,9 @@ public class AuthenticationService {
     @Transactional
     public void refreshTokens(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = extractRefreshTokenOrThrow(request);
+        logger.warn("Raw token from cookie: {}", refreshToken);
         RefreshToken stored = findStoredTokenOrThrow(refreshToken);
+        logger.warn("Stored token from db: {}", stored);
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {
             refreshTokenRepository.delete(stored);
