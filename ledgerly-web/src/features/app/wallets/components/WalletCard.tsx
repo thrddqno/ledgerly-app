@@ -37,17 +37,17 @@ export default function WalletCard({ wallet, isSelected, onClick, modifiable, on
                         : 'border-border bg-surface hover:border-border-hover'
                 }`}
             >
-                <div className="flex w-full flex-row items-center gap-4">
-                    <div className="bg-accent/10 text-accent flex h-10 w-10 items-center justify-center rounded-3xl">
-                        <FontAwesomeIcon icon={faWallet} />
+                <div className="max-tablet:gap-2 flex w-full flex-row items-center gap-4">
+                    <div className="bg-accent/10 text-accent max-tablet:h-7 max-tablet:w-7 flex h-10 w-10 items-center justify-center rounded-3xl">
+                        <FontAwesomeIcon className="max-tablet:text-xs" icon={faWallet} />
                     </div>
                     <div className="flex min-w-0 flex-col items-start">
-                        <span className="text-text-primary tablet:text-xs desktop:text-sm phone:text-[0.75rem] truncate">
+                        <span className="text-text-primary max-tablet:text-xs max-desktop:text-sm max-phone:text-[0.75rem] truncate">
                             {wallet.name}
                         </span>
 
                         <span
-                            className={`phone:text-[0.75rem] tablet:text-xs desktop:text-sm w-full truncate text-base font-semibold tabular-nums ${isPositive ? 'text-income' : 'text-expense'} `}
+                            className={`max-phone:text-[0.75rem] max-tablet:text-xs max-desktop:text-sm w-full truncate text-base font-semibold tabular-nums ${isPositive ? 'text-income' : 'text-expense'} `}
                         >
                             {isPositive ? '+' : ''}
                             {formatted}

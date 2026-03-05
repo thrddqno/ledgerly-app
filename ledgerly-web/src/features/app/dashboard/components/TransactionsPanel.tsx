@@ -31,7 +31,7 @@ function groupByDate(transactions: Transaction[]): [string, Transaction[]][] {
     return Array.from(map.entries())
 }
 
-export default function RecentTransactionsPanel({
+export default function TransactionsPanel({
     transactions,
     isLoading,
     onLoadMore,
@@ -45,6 +45,13 @@ export default function RecentTransactionsPanel({
 
     const scrollRef = useRef<HTMLDivElement>(null)
     useInfiniteScroll(onLoadMore, isLoading, scrollRef)
+
+    const getRelatedWalletName = (relatedWalletId: string | undefined) => {
+        if (!relatedWalletId) return 'Unknown'
+
+        const wallet = wallets.find((w) => w.id === relatedWalletId)
+        return wallet?.name ?? 'Unknown'
+    }
 
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: 0 })
@@ -60,7 +67,7 @@ export default function RecentTransactionsPanel({
                             onClick={() => {
                                 onClose()
                             }}
-                            className="top-4 left-4 z-10 text-2xl lg:hidden"
+                            className="text-text-primary top-4 left-4 z-10 text-2xl lg:hidden"
                         >
                             <ChevronLeftIcon />
                         </button>
@@ -86,11 +93,6 @@ export default function RecentTransactionsPanel({
                 )}
             </div>
 
-            {/* Initial load spinner */}
-
-            {/* Empty state - only show when not loading */}
-
-            {/* Independently scrolling list */}
             <div
                 ref={scrollRef}
                 className="scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-border scrollbar-track-transparent flex-1 space-y-7 overflow-y-auto px-6 py-5"
@@ -137,27 +139,38 @@ export default function RecentTransactionsPanel({
                                         )}
                                     </div>
 
+                                    {!tx.transfer && (
+                                        <div className="flex min-w-0 flex-1 flex-col">
+                                            <span className="text-text-primary truncate text-sm font-medium">
+                                                {tx.notes ?? tx.categoryResponse.name}
+                                            </span>
+                                            <span className="text-text-secondary mt-0.5 text-xs">
+                                                {tx.notes ? tx.categoryResponse.name : ''}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {tx.transfer && (
+                                        <div className="flex min-w-0 flex-1 flex-col">
+                                            <span className="text-text-primary truncate text-sm font-medium">
+                                                {tx.isIncoming ? 'From' : 'To'}{' '}
+                                                {getRelatedWalletName(tx.relatedWalletId)}
+                                            </span>
+                                            <span className="text-text-secondary mt-0.5 text-xs">
+                                                {tx.categoryResponse.name}
+                                            </span>
+                                        </div>
+                                    )}
+
                                     {/* Description + wallets · category */}
-                                    <div className="flex min-w-0 flex-1 flex-col">
-                                        <span className="text-text-primary truncate text-sm font-medium">
-                                            {tx.notes ?? tx.categoryResponse.name}
-                                        </span>
-                                        <span className="text-text-secondary mt-0.5 text-xs">
-                                            {tx.notes ? tx.categoryResponse.name : ''}
-                                        </span>
-                                    </div>
 
                                     <div className="text-text-muted ml-6 flex shrink-0 flex-col items-end">
                                         <span
-                                            className={`text-sm font-semibold tabular-nums ${
-                                                tx.categoryResponse.transactionType === 'INCOME'
-                                                    ? 'text-income'
-                                                    : 'text-expense'
+                                            className={`text-sm font-bold tabular-nums ${
+                                                tx.isIncoming ? 'text-income' : 'text-expense'
                                             }`}
                                         >
-                                            {tx.categoryResponse.transactionType === 'INCOME'
-                                                ? '+'
-                                                : '-'}
+                                            {tx.isIncoming ? '+' : '-'}
                                             {formatCurrency(tx.amount, 'PHP')}
                                         </span>
                                         <span className="text-subtle mt-0.5 text-xs">

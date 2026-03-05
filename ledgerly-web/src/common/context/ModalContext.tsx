@@ -14,12 +14,14 @@ type ModalType = ModalConfig['type']
 
 interface ModalContextType {
     openModal: (config: ModalConfig) => void
+    isModalActive: boolean
 }
 
 const ModalContext = createContext<ModalContextType | null>(null)
 
 export function ModalProvider({ children }: { children: React.ReactNode }) {
     const [active, setActive] = useState<ModalConfig | null>(null)
+    const isModalActive = active !== null
 
     const openModal = (config: ModalConfig) => setActive(config)
     const closeModal = () => setActive(null)
@@ -27,8 +29,9 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
     const value = useMemo(
         () => ({
             openModal,
+            isModalActive,
         }),
-        []
+        [isModalActive]
     )
 
     return (

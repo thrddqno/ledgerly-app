@@ -3,6 +3,7 @@ import { ModalProvider } from '../common/context/ModalContext.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { DeviceProvider } from '../common/context/DeviceContext.tsx'
 import { UIProvider } from '../common/context/UIContext.tsx'
+import { BackdropProvider } from '../common/context/BackdropContext.tsx'
 
 interface Props {
     children: React.ReactNode
@@ -23,7 +24,9 @@ export default function AppProviders({ children }: Props) {
             <UIProvider>
                 <QueryClientProvider client={queryClient}>
                     <AuthProvider>
-                        <ModalProvider>{children}</ModalProvider>
+                        <BackdropProvider>
+                            <ModalProvider>{children}</ModalProvider>
+                        </BackdropProvider>
                     </AuthProvider>
                 </QueryClientProvider>
             </UIProvider>

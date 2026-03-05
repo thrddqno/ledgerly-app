@@ -15,12 +15,12 @@ export function PromptLogoutModal({ onClose }: Props) {
             await logout()
             onClose()
         } catch {
-            setError('Failed to logout.')
+            setError('Failed to sign out.')
         }
     }
 
     return (
-        <Modal title="Do you want to Logout?" onClose={onClose}>
+        <Modal title="Do you want to sign out?" onClose={onClose}>
             <div className="flex flex-col gap-4">
                 {error && <p className="text-expense text-center text-sm">{error}</p>}
 
@@ -28,16 +28,16 @@ export function PromptLogoutModal({ onClose }: Props) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border-border text-text-secondary hover:text-text-primary flex-1 rounded-lg border py-3 text-sm font-medium transition-all"
+                        className="border-border text-text-secondary hover:text-text-primary flex-1 cursor-pointer rounded-lg border py-3 text-sm font-medium transition-all"
                     >
                         Cancel
                     </button>
                     <button
                         type="button"
                         onClick={handleLogout}
-                        className="bg-danger flex-1 rounded-lg py-3 text-sm font-bold text-white transition-all hover:brightness-75 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="bg-danger flex-1 cursor-pointer rounded-lg py-3 text-sm font-bold text-white transition-all hover:brightness-75"
                     >
-                        Logout
+                        Sign out
                     </button>
                 </div>
             </div>
