@@ -1,15 +1,10 @@
-import { useEffect } from 'react'
 import spending from '../../../../assets/spending.svg'
 import { Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '../../../../common/context/AuthenticationContext.tsx'
-import { useNavigate } from 'react-router-dom'
 import { useAuthForm } from '../hooks/useAuthForm.ts'
 import { InputField } from '../components/InputField.tsx'
 import { passwordRequirements } from '../utils/passwordValidation.ts'
 
 export default function AuthPage() {
-    const { isLoading, isAuthenticated } = useAuth()
-    const navigate = useNavigate()
     const {
         isLogin,
         form,
@@ -22,13 +17,6 @@ export default function AuthPage() {
         isSubmitDisabled,
         setShowPass,
     } = useAuthForm()
-
-    useEffect(() => {
-        if (!isLoading && isAuthenticated) {
-            console.log('Navigating to dashboard')
-            navigate('/dashboard')
-        }
-    }, [isAuthenticated, isLoading, navigate])
 
     return (
         <div className="bg-base flex h-screen w-screen overflow-hidden font-sans">
