@@ -64,7 +64,16 @@ export default function WalletList({ onWalletSelect, selectedWallet, modifiable 
 
                         {wallets.length < MAX_WALLETS && modifiable && (
                             <button
-                                onClick={() => openModal({ type: 'addWallet' })}
+                                onClick={() =>
+                                    openModal({
+                                        type: 'addWallet',
+                                        payload: {
+                                            onCreated: (wallet: Wallet) => {
+                                                onWalletSelect?.(wallet)
+                                            },
+                                        },
+                                    })
+                                }
                                 className="hover:bg-elevated text-text-muted/50 min-h-18 w-full cursor-pointer rounded-md border border-dashed py-2.5 text-xs font-semibold transition-colors duration-150"
                             >
                                 + Add Wallet

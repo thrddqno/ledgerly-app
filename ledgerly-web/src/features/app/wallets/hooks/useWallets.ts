@@ -58,7 +58,7 @@ export function useWallets() {
         isLoading,
         error: error?.message ?? '',
         totalBalance,
-        createWallet: createWalletMutation.mutate,
+        createWallet: createWalletMutation.mutateAsync,
         reorderWallets: reorderWalletsMutation.mutate,
         updateWallet: updateWalletMutation.mutate,
         deleteWallet: deleteWalletMutation.mutate,

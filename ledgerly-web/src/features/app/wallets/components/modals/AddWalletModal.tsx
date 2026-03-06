@@ -1,12 +1,14 @@
 import Modal from '../../../../../common/components/modals/Modal.tsx'
 import { useState } from 'react'
 import { useWallets } from '../../hooks/useWallets.ts'
+import type { Wallet } from '../../types/wallet.ts'
 
 interface Props {
     onClose: () => void
+    onCreated?: (wallet: Wallet) => void
 }
 
-export function AddWalletModal({ onClose }: Props) {
+export function AddWalletModal({ onClose, onCreated }: Props) {
     const [form, setForm] = useState({ name: '', startingBalance: '' })
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -20,10 +22,12 @@ export function AddWalletModal({ onClose }: Props) {
         setIsSubmitting(true)
         setError('')
         try {
-            await createWallet({
+            const wallet = await createWallet({
                 name: form.name,
                 startingBalance: parseFloat(form.startingBalance) || 0,
             })
+
+            onCreated?.(wallet)
             onClose()
         } catch {
             setError('Failed to create wallets.')

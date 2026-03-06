@@ -1,7 +1,8 @@
 import Modal from '../../../../../common/components/modals/Modal.tsx'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useWallets } from '../../hooks/useWallets.ts'
 import type { Wallet } from '../../types/wallet.ts'
+import { useModal } from '../../../../../common/context/ModalContext.tsx'
 
 interface Props {
     onClose: () => void
@@ -13,6 +14,11 @@ export function UpdateWalletModal({ onClose, wallet }: Props) {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
     const { updateWallet } = useWallets()
+    const { openModal } = useModal()
+
+    const handleDelete = useCallback(() => {
+        openModal({ type: 'deleteWallet', payload: wallet })
+    }, [openModal, wallet])
 
     useEffect(() => {
         setForm({
@@ -45,7 +51,7 @@ export function UpdateWalletModal({ onClose, wallet }: Props) {
     }
 
     return (
-        <Modal title={`Update ${wallet.name}`} onClose={onClose}>
+        <Modal title={`Update "${wallet.name}"`} onClose={onClose}>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div>
                     <label className="text-text-muted mb-2 block text-xs font-medium tracking-widest uppercase">
@@ -95,6 +101,12 @@ export function UpdateWalletModal({ onClose, wallet }: Props) {
                         {isSubmitting ? 'Updating...' : 'Update Wallet'}
                     </button>
                 </div>
+                <button
+                    type='button'
+                    onClick={handleDelete}
+                    className="text-xs underline text-danger">
+                    Delete Wallet
+                </button>
             </form>
         </Modal>
     )

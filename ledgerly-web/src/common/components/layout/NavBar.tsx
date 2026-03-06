@@ -19,7 +19,7 @@ import { useUIContext } from '../../context/UIContext.tsx'
 import { useModal } from '../../context/ModalContext.tsx'
 import { useTheme } from '../../hooks/useTheme.ts'
 import WalletCarousel from '../../../features/app/wallets/components/WalletCarousel.tsx'
-import { useBackdrop } from '../../context/BackdropContext.tsx'
+import { useBackdropToggle } from '../../hooks/useBackdropToggle.ts'
 
 interface Props {
     selectedWallet?: Wallet | null
@@ -38,28 +38,15 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
     const { theme, toggleTheme } = useTheme()
     const { activePage } = useUIContext()
     const { breakpoint } = useDevice()
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-    const [isShowWalletCarouselOpen, setIsShowWalletCarouselOpen] = useState(false)
     const { openModal } = useModal()
-    const { show, hide } = useBackdrop()
-
-    useEffect(() => {
-        if (isUserMenuOpen || isShowWalletCarouselOpen) {
-            show(() => {
-                setIsUserMenuOpen(false)
-                setIsShowWalletCarouselOpen(false)
-            })
-        } else {
-            hide()
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isUserMenuOpen, isShowWalletCarouselOpen])
+    const userMenu = useBackdropToggle('dropdown')
+    const walletCarousel = useBackdropToggle('dropdown')
 
     //todo: REFACTOR NAVBAR TO DIFFERENT COMPONENTS (EG. DESKTOPNAVBAR, MOBILENAVBAR ETC)
 
     return (
         <>
-            <div className="bg-surface fixed z-50 flex h-18 w-screen shrink-0 flex-row justify-between px-4 shadow-md">
+            <div className="bg-surface fixed z-20 flex h-18 w-screen shrink-0 flex-row justify-between px-4 shadow-md">
                 <button
                     className="flex cursor-pointer flex-col items-center justify-center p-2"
                     onClick={() => {
@@ -77,21 +64,23 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                     <>
                         <button
                             className="te text-text-secondary flex cursor-pointer flex-row items-center justify-center gap-2 p-2 text-xl font-bold"
-                            onClick={() => {
-                                setIsShowWalletCarouselOpen(!isShowWalletCarouselOpen)
-                                setIsUserMenuOpen(false)
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                userMenu.close()
+                                walletCarousel.isOpen ? walletCarousel.close() : walletCarousel.open()
+
                             }}
                         >
                             {selectedWallet?.name ?? 'Wallets'}
                             <ChevronDown
-                                className={`text-text-muted/50 ${isShowWalletCarouselOpen ? 'rotate-180' : ''} mt-1 h-5 w-5 transition-transform`}
+                                className={`text-text-muted/50 ${walletCarousel.isOpen ? 'rotate-180' : ''} mt-1 h-5 w-5 transition-transform`}
                             />
                         </button>
 
                         {/* WALLET CAROUSEL */}
                         <div
                             className={`bg-surface absolute top-full left-0 z-60 w-full rounded-sm p-5 font-semibold shadow-xl ring-1 ring-black/5 transition-all duration-200 ease-out ${
-                                isShowWalletCarouselOpen
+                                walletCarousel.isOpen
                                     ? 'translate-y-0 opacity-100'
                                     : 'pointer-events-none -translate-y-2 opacity-0'
                             } `}
@@ -99,11 +88,9 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                             <WalletCarousel
                                 selectedWallet={selectedWallet}
                                 onWalletSelect={(wallet) => {
-                                    setIsShowWalletCarouselOpen(!isShowWalletCarouselOpen)
+                                    walletCarousel.close()
                                     onWalletSelect?.(wallet)
-                                    if (!wallet) {
-                                        setIsShowWalletCarouselOpen(false)
-                                    }
+
                                 }}
                             />
                         </div>
@@ -139,9 +126,10 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                         <div className="my-4 mr-4 flex items-center justify-between pl-5">
                             <button
                                 className="flex cursor-pointer items-center gap-2.5 outline-none"
-                                onClick={() => {
-                                    setIsUserMenuOpen(!isUserMenuOpen)
-                                    setIsShowWalletCarouselOpen(false)
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    walletCarousel.close()
+                                    userMenu.isOpen ? userMenu.close() : userMenu.open()
                                 }}
                             >
                                 <span className="bg-accent flex h-8 w-8 items-center justify-center rounded-full">
@@ -151,14 +139,14 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                                     {user?.firstName}
                                 </span>
                                 <ChevronDown
-                                    className={`text-text-muted/50 h-5 w-5 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                                    className={`text-text-muted/50 h-5 w-5 transition-transform ${userMenu.isOpen ? 'rotate-180' : ''}`}
                                 />
                             </button>
                         </div>
 
                         <div
                             className={`bg-surface absolute top-full right-2 z-60 mt-2 w-48 origin-top-right rounded-sm py-1 font-semibold shadow-xl ring-1 ring-black/5 transition-all duration-200 ease-out ${
-                                isUserMenuOpen
+                                userMenu.isOpen
                                     ? 'translate-y-0 opacity-100'
                                     : 'pointer-events-none -translate-y-2 opacity-0'
                             }`}
@@ -172,7 +160,7 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                             <button
                                 onClick={() => {
                                     toggleTheme()
-                                    setIsUserMenuOpen(false)
+                                    userMenu.close()
                                 }}
                                 className="text-text-secondary hover:text-text-primary flex w-full cursor-pointer items-center gap-2 px-4 py-2 text-sm"
                             >
@@ -181,7 +169,7 @@ export default function NavBar({ selectedWallet, onWalletSelect }: Props) {
                             <button
                                 onClick={() => {
                                     openModal({ type: 'logout' })
-                                    setIsUserMenuOpen(false)
+                                    userMenu.close()
                                 }}
                                 className="border-border text-danger flex w-full cursor-pointer items-center gap-2 border-t px-4 py-2 text-sm hover:text-red-700"
                             >
