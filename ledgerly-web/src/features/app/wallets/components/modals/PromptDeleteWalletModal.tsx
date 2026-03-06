@@ -25,7 +25,7 @@ export function PromptDeleteWalletModal({ onClose, wallet }: Props) {
     }
 
     return (
-        <Modal title={`Do you want to delete ${wallet.name}?`} onClose={onClose}>
+        <Modal title={`Do you want to delete "${wallet.name}"?`} onClose={onClose}>
             <div className="flex flex-col gap-4">
                 {error && <p className="text-expense text-center text-sm">{error}</p>}
 
@@ -42,7 +42,7 @@ export function PromptDeleteWalletModal({ onClose, wallet }: Props) {
                         onClick={handleDelete}
                         className="bg-danger flex-1 cursor-pointer rounded-lg py-3 text-sm font-bold text-white transition-all hover:brightness-75"
                     >
-                        Delete {wallet.name}
+                        Delete
                     </button>
                 </div>
             </div>
