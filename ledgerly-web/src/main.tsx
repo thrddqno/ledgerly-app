@@ -6,6 +6,7 @@ import App from './app/App.tsx'
 import AppProviders from './providers/AppProviders.tsx'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
+
 library.add(fas)
 
 const saved = localStorage.getItem('theme') ?? 'dark'

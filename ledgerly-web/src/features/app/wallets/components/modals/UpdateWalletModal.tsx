@@ -102,9 +102,10 @@ export function UpdateWalletModal({ onClose, wallet }: Props) {
                     </button>
                 </div>
                 <button
-                    type='button'
+                    type="button"
                     onClick={handleDelete}
-                    className="text-xs underline text-danger">
+                    className="text-danger text-xs underline"
+                >
                     Delete Wallet
                 </button>
             </form>

@@ -1,18 +1,16 @@
 import { X } from 'lucide-react'
+import * as React from 'react'
 import { useEffect } from 'react'
 import { useBackdropToggle } from '../../hooks/useBackdropToggle.ts'
-import * as React from 'react'
 
 interface Props {
     title: string
     onClose: () => void
     children: React.ReactNode
     maxWidth?: string
-
 }
 
 export default function Modal({ title, onClose, children, maxWidth }: Props) {
-
     const modal = useBackdropToggle('modal', onClose)
 
     const handleClose = () => {
@@ -22,9 +20,9 @@ export default function Modal({ title, onClose, children, maxWidth }: Props) {
 
     useEffect(() => {
         modal.open()
-        console.log("i fire")
+        console.log('i fire')
         return () => {
-            console.log("i return")
+            console.log('i return')
             modal.close()
         }
     }, [])

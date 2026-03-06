@@ -1,12 +1,12 @@
 import {
+    createTransaction as createTransactionRequest,
+    createTransfer as createTransferRequest,
+    deleteTransaction as deleteTransactionRequest,
+    deleteTransfer as deleteTransferRequest,
     getTransactions,
     getTransactionsByWallet,
-    createTransaction as createTransactionRequest,
     updateTransaction as updateTransactionRequest,
-    deleteTransaction as deleteTransactionRequest,
-    createTransfer as createTransferRequest,
     updateTransfer as updateTransferRequest,
-    deleteTransfer as deleteTransferRequest,
 } from '../api/transactionApi.ts'
 import type {
     TransactionRequest,

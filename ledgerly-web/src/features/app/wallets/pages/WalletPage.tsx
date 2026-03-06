@@ -2,12 +2,10 @@ import { useDevice } from '../../../../common/context/DeviceContext.tsx'
 import WalletList from '../components/WalletList.tsx'
 import type { Wallet } from '../types/wallet.ts'
 import { useState } from 'react'
-import { Trash } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { useTransactions } from '../../transactions/hooks/useTransactions.ts'
 import TransactionsPanel from '../components/TransactionsPanel.tsx'
 import NavBar from '../../../../common/components/layout/NavBar.tsx'
-import WalletCarousel from '../components/WalletCarousel.tsx'
 
 export default function WalletPage() {
     const location = useLocation()

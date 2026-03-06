@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useMemo, useCallback, useRef } from 'react'
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
 
 interface BackdropContextType {
     show: (type: BackdropType, onClickHandler?: () => void) => number
     hide: (id: number) => void
     isVisible: boolean
+    clearAll: () => void
 }
 
 export type BackdropType = 'dropdown' | 'modal' | 'sidebar' | 'tooltip'
@@ -50,7 +51,14 @@ export function BackdropProvider({ children }: { children: React.ReactNode }) {
         })
     }, [])
 
-    const value = useMemo(() => ({ show, hide, isVisible }), [show, hide, isVisible])
+    const clearAll = useCallback(() => {
+        setStack([])
+    }, [])
+
+    const value = useMemo(
+        () => ({ show, hide, clearAll, isVisible }),
+        [show, hide, clearAll, isVisible]
+    )
 
     return (
         <BackdropContext.Provider value={value}>

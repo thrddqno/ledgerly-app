@@ -1,10 +1,10 @@
 import {
-    getCategories,
     createCategory as createCategoryRequest,
-    updateCategory as updateCategoryRequest,
     deleteCategory as deleteCategoryRequest,
     deleteCategoryAndMove as deleteCategoryAndMoveRequest,
+    getCategories,
     mergeCategories as mergeCategoriesRequest,
+    updateCategory as updateCategoryRequest,
 } from '../api/categoryApi.ts'
 import { useAuth } from '../../../../common/context/AuthenticationContext.tsx'
 import type { Category, UpdateCategoryRequest } from '../types/category.ts'

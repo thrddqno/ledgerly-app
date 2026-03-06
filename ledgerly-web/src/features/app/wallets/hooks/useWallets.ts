@@ -1,9 +1,9 @@
 import {
-    getWalletsDetailed,
     createWallet as createWalletRequest,
-    updateWallet as updateWalletRequest,
     deleteWallet as deleteWalletRequest,
+    getWalletsDetailed,
     reorderWallets as reorderWalletRequest,
+    updateWallet as updateWalletRequest,
 } from '../api/walletApi.ts'
 import type { WalletRequest } from '../types/wallet.ts'
 import { useAuth } from '../../../../common/context/AuthenticationContext.tsx'

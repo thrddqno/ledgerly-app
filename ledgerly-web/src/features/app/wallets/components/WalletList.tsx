@@ -1,10 +1,9 @@
-import { useRef, useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import WalletCard from './WalletCard.tsx'
 import { PackageOpen } from 'lucide-react'
 import type { Wallet } from '../types/wallet.ts'
 import { useWallets } from '../hooks/useWallets.ts'
 import { useModal } from '../../../../common/context/ModalContext.tsx'
-import { useDevice } from '../../../../common/context/DeviceContext.tsx'
 
 interface Props {
     onWalletSelect?: (wallet: Wallet | null) => void

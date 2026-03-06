@@ -1,9 +1,8 @@
-
+import * as React from 'react'
 import { useState } from 'react'
 import Modal from '../../../../../common/components/modals/Modal.tsx'
 import type { Wallet } from '../../types/wallet.ts'
 import { useWallets } from '../../hooks/useWallets.ts'
-import * as React from 'react'
 
 interface Props {
     onClose: () => void

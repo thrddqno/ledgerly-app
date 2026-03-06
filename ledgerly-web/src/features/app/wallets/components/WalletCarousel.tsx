@@ -47,11 +47,16 @@ export default function WalletCarousel({ onWalletSelect, selectedWallet }: Props
                 ))}
                 {wallets.length < MAX_WALLETS && (
                     <button
-                        onClick={() => openModal({ type: 'addWallet', payload: {
-                            onCreated: (wallet: Wallet) => {
-                                onWalletSelect?.(wallet)
-                            }
-                            } })}
+                        onClick={() =>
+                            openModal({
+                                type: 'addWallet',
+                                payload: {
+                                    onCreated: (wallet: Wallet) => {
+                                        onWalletSelect?.(wallet)
+                                    },
+                                },
+                            })
+                        }
                         className="hover:bg-elevated text-text-muted/50 w-48 shrink-0 cursor-pointer snap-start rounded-md border border-dashed py-2.5 text-xs font-semibold transition-colors duration-150"
                     >
                         + Add Wallet

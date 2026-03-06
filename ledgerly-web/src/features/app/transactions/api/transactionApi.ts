@@ -1,11 +1,11 @@
 import api from '../../../../common/api/axios.ts'
 import type {
+    CursorPagedTransactionResponse,
+    PaginatedTransactionResponse,
     Transaction,
     TransactionRequest,
     TransferRequest,
     UpdateTransferRequest,
-    PaginatedTransactionResponse,
-    CursorPagedTransactionResponse,
 } from '../types/transaction.ts'
 
 export const getTransactions = (params?: {
