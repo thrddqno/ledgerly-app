@@ -26,12 +26,10 @@
     •
     <a href="#-live-demo">Demo</a>
     •
-    <a href="#️-roadmap">Roadmap</a>
-    •
     <a href="#-license">License</a>
 </h4>
 
-<h6>🚧 Work in Progress (WIP)</h6>
+<h6>⚠️ Legacy Code ⚠️</h6>
 </div>
 
 ## 🔹 About
@@ -51,10 +49,6 @@ the stack. I wanted a system where I owned every line of code, from the database
 - **Data Reliability (PostgreSQL):** I didn't want to just "store" data; I wanted to enforce it. I used a relational
   model to handle the complex links between wallets and transactions, ensuring that if a category changes or a wallet is
   closed, the math still adds up.
-
-## 🔴 Live Demo
-
-Check out the live demo on this site: _🚧 Work in Progress (WIP)_
 
 ## 💻 Development Setup
 
@@ -212,36 +206,6 @@ npm start
 ```
 </details>
 </details>
-
-## 🗺️ Roadmap
-
-_Roadmap may change according to alignment_
-<!-- Add Roadmap -->
-
-### Phase 1 - Core Stability
-
-- [x] User authentication and JWT-based authorization
-- [x] Wallet, transaction, category domains
-- [x] Merge and delete for categories
-- [x] Wallet-to-wallet transactions
-- [x] Consistent API error responses and validation messages
-- [x] Keyset Pagination and filtering for transaction queries
-- [x] Refresh Tokens
-- [x] Set HttpOnly cookie for JWT readying for front-end impl
-
-### Phase 2 - UI & UX
-- [ ] Design UI using [Figma](https://www.figma.com/proto/wp8dR6lr0DHMHQpFpndSlr/Ledgerly-App?node-id=2-2&t=YqoDwgmjpVDJX7No-1)
-- **Front-end implementation**
-  - [ ] Build the React frontend to fully consume the backend APIs.
-  - [ ] Responsive UI for desktop and mobile.
-  - [ ] Form validations and user-friendly error handling.
-  - [ ] Theme selection (light/dark mode).
-- **Reporting & Analytics**
-  - [ ] Dashboard for transaction summaries, charts, and trends. 
-  - [ ] Monthly/weekly summaries by category or wallet. 
-  - [ ] Export reports as CSV or PDF.
-- **User Settings & Personalization**
-  - [ ] Profile management (name, email, password change) _means i will have token invalidation thingy idk_
 
 ## 🏦 License
 
