@@ -4,6 +4,7 @@ import { PromptLogoutModal } from '../components/modals/PromptLogoutModal.tsx'
 import { UpdateWalletModal } from '../../features/app/wallets/components/modals/UpdateWalletModal.tsx'
 import type { Wallet } from '../../features/app/wallets/types/wallet.ts'
 import { PromptDeleteWalletModal } from '../../features/app/wallets/components/modals/PromptDeleteWalletModal.tsx'
+import { AddTransactionModal } from '../../features/app/transactions/components/AddTransactionModal.tsx'
 
 // 1. Register every modals type + its payload shape here
 type ModalConfig =
@@ -11,6 +12,7 @@ type ModalConfig =
     | { type: 'logout'; payload?: never }
     | { type: 'editWallet'; payload?: Wallet }
     | { type: 'deleteWallet'; payload?: Wallet }
+    | { type: 'addTransaction'; payload?: never }
 
 type ModalType = ModalConfig['type']
 
@@ -50,6 +52,8 @@ export function ModalProvider({ children }: { children: React.ReactNode }) {
             {active?.type === 'deleteWallet' && active.payload && (
                 <PromptDeleteWalletModal onClose={closeModal} wallet={active.payload} />
             )}
+
+            {active?.type === 'addTransaction' && <AddTransactionModal onClose={closeModal} />}
         </ModalContext.Provider>
     )
 }

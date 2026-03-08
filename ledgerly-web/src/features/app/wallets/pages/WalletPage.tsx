@@ -1,11 +1,12 @@
 import { useDevice } from '../../../../common/context/DeviceContext.tsx'
 import WalletList from '../components/WalletList.tsx'
 import type { Wallet } from '../types/wallet.ts'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTransactions } from '../../transactions/hooks/useTransactions.ts'
 import TransactionsPanel from '../components/TransactionsPanel.tsx'
 import NavBar from '../../../../common/components/layout/NavBar.tsx'
+import { useModal } from '../../../../common/context/ModalContext.tsx'
 
 export default function WalletPage() {
     const location = useLocation()
@@ -16,6 +17,11 @@ export default function WalletPage() {
     const { transactions, isLoading, hasMore, loadMore } = useTransactions({
         walletId: selectedWallet?.id,
         size: 20,
+    })
+    const { openModal } = useModal()
+
+    const handleAddTransaction = useCallback(() => {
+        openModal({ type: 'addTransaction' })
     })
 
     const handleWalletSelect = (wallet: Wallet | null) => {
@@ -40,6 +46,7 @@ export default function WalletPage() {
                             />
                         </div>
                     )}
+                    <button onClick={handleAddTransaction}>Open this shi</button>
 
                     {!selectedWallet ? (
                         <div className="text-text-muted flex flex-1 flex-col items-center justify-center gap-2 text-sm">

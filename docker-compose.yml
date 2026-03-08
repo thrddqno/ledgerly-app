@@ -4,9 +4,9 @@ services:
     image: postgres:latest
     container_name: ledgerly-db
     environment:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_DB:
+      POSTGRES_USER: ledgerly_user
+      POSTGRES_PASSWORD: ledgerly123
+      POSTGRES_DB: ledgerly
     ports:
       - "5432:5432"
     volumes:
@@ -19,8 +19,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ledgerly
-      - SPRING_DATASOURCE_USERNAME=
-      - SPRING_DATASOURCE_PASSWORD=
-      - JWT_SECRET_KEY=""
+      - SPRING_DATASOURCE_USERNAME=ledgerly_user
+      - SPRING_DATASOURCE_PASSWORD=ledgerly123
+      - JWT_SECRET_KEY="dGVzdHRyYWNrbHVja3ljdXR0aW5ndGhlb3J5Y2hlZXNlc3RvY2t2ZXJ5aHVycmllZGJpY3ljbGVoYXJkZXJzdA=="
 volumes:
   db-data: {}
