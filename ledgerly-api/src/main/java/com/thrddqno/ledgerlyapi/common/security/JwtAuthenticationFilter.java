@@ -1,6 +1,7 @@
 package com.thrddqno.ledgerlyapi.common.security;
 
 import com.thrddqno.ledgerlyapi.common.security.auth.AuthenticationService;
+import com.thrddqno.ledgerlyapi.common.security.auth.exception.AuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,50 +56,79 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
         String email = null;
 
-        if(authHeader != null && authHeader.startsWith("Bearer "))  { token =  authHeader.substring(7); logger.debug("Token from Authorization header"); }
+        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+            logger.debug("Token from Authorization header");
+        }
 
-        if(token == null && request.getCookies() != null){
-            token = Arrays.stream(request.getCookies())
-                    .filter(cookie -> "access_token".equals(cookie.getName())) // Match your backend
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
+        if(token == null) {
+            if (request.getCookies() != null) {
+                token = Arrays.stream(request.getCookies())
+                        .filter(cookie -> "access_token".equals(cookie.getName()))
+                        .map(Cookie::getValue)
+                        .findFirst()
+                        .orElse(null);
 
-            if (token != null) {
-                logger.debug("Token from access_token cookie");
-            } else {
-                logger.warn("No access_token cookie found in request to {}", uri);
+                if (token != null) {
+                    logger.debug("Token from access_token cookie");
+                }
             }
         }
 
-        if (token != null){
-            try {
-                email = jwtService.extract("email", token);
-            } catch (Exception e){
-                logger.error("Error extracting token: " + e.getMessage());
-            }
+
+        if (token == null) {
+            logger.warn("No token found in request to {}", uri);
+            sendErrorResponse(response, "NO_TOKEN", "Token not provided", HttpStatus.UNAUTHORIZED);
+            return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        try {
+            email = jwtService.extract("email", token);
+        } catch (Exception e) {
+            logger.error("Error extracting token: {}", e.getMessage());
+            sendErrorResponse(response, "INVALID_TOKEN", "Token is invalid or malformed", HttpStatus.UNAUTHORIZED);
+            return;
+        }
+
+        if (email == null) {
+            sendErrorResponse(response, "INVALID_TOKEN", "Could not extract email from token", HttpStatus.UNAUTHORIZED);
+            return;
+        }
+
+        if (SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
                         );
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             } else {
                 logger.warn("Token invalid or expired for user: {}", email);
+                sendErrorResponse(response, "INVALID_TOKEN", "Token is invalid or expired", HttpStatus.UNAUTHORIZED);
+                return;
             }
-        } else if (token == null) {
-            logger.debug("No token found in request to {}", uri);
         }
 
         filterChain.doFilter(request,response);
 
     }
+
+    private void sendErrorResponse(HttpServletResponse response, String errorCode, String message, HttpStatus status) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        String json = String.format(
+                "{\"errorCode\":\"%s\",\"message\":\"%s\",\"status\":%d}",
+                errorCode,
+                message,
+                status.value()
+        );
+        response.getWriter().write(json);
+    }
 }
+
+

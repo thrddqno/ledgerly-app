@@ -34,11 +34,10 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/auth/login",
                                 "/auth/register",
-                                "/auth/refresh"
+                                "/auth/refresh",
+                                "/user/check-auth"
                         )
                         .permitAll()
-                        .requestMatchers("/auth/me")
-                        .authenticated()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(management -> management
