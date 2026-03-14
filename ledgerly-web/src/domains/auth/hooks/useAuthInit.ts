@@ -5,12 +5,19 @@ import { useAuthStore } from '../store/authStore.ts'
 export function useAuthInit() {
     const checkAuth = useAuthStore((state) => state.checkAuth)
     const logout = useAuthStore((state) => state.logout)
+    const fetchUser = useAuthStore((state) => state.fetchUser)
 
     useEffect(() => {
-        checkAuth().catch((error) => {
-            console.error('Check Auth Error: ', error)
-        })
-    }, [checkAuth])
+        const init = async () => {
+            try {
+                await checkAuth()
+                await fetchUser()
+            } catch (error) {
+                console.error('Auth init error:', error)
+            }
+        }
+        init()
+    }, [checkAuth, fetchUser])
 
     useEffect(() => {
         const handleUnauthorized = async () => {
