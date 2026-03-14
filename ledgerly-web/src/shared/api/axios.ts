@@ -53,6 +53,7 @@ api.interceptors.response.use(
             '/auth/login',
             '/auth/register',
             '/auth/refresh',
+            '/auth/logout',
         ]
 
         if (
