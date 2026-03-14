@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios'
 import { create } from 'zustand'
 
 import {
@@ -13,7 +14,7 @@ type AuthStore = {
     user: User | null
     isAuthenticated: boolean
     isLoading: boolean
-    error?: Error | null
+    error: string | null
 
     login: (email: string, password: string) => Promise<void>
     logout: () => Promise<void>
@@ -45,7 +46,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
             const userData = await fetchUserRequest()
             set({ user: userData, isLoading: false })
         } catch (e) {
-            set({ error: e as Error, isLoading: false })
+            const message =
+                e instanceof AxiosError
+                    ? e.response?.data?.message || e.message
+                    : 'Fetch user failed'
+            set({ error: message, isLoading: false })
         }
     },
 
@@ -55,7 +60,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
             await checkAuthRequest()
             set({ isAuthenticated: true, isLoading: false })
         } catch (e) {
-            set({ isAuthenticated: false, error: e as Error, isLoading: false })
+            const message =
+                e instanceof AxiosError
+                    ? e.response?.data?.message || e.message
+                    : 'Check auth failed'
+            set({ isAuthenticated: false, error: message, isLoading: false })
         }
     },
 
@@ -69,7 +78,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
             await useAuthStore.getState().fetchUser()
             set({ isLoading: false })
         } catch (e) {
-            set({ isAuthenticated: false, error: e as Error, isLoading: false })
+            const message =
+                e instanceof AxiosError
+                    ? e.response?.data?.message || e.message
+                    : 'Sign in failed'
+            set({ isAuthenticated: false, error: message, isLoading: false })
         }
     },
     logout: async () => {
@@ -95,7 +108,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
             await useAuthStore.getState().fetchUser()
             set({ isLoading: false })
         } catch (e) {
-            set({ isAuthenticated: false, error: e as Error, isLoading: false })
+            const message =
+                e instanceof AxiosError
+                    ? e.response?.data?.message || e.message
+                    : 'Register failed'
+            set({ isAuthenticated: false, error: message, isLoading: false })
         }
     },
 
