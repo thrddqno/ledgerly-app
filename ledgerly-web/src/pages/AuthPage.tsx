@@ -1,11 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import landing from '../assets/landing.png'
 import { LoginForm } from '../domains/auth/components/LoginForm.tsx'
 import { RegisterForm } from '../domains/auth/components/RegisterForm.tsx'
+import { useAuthStore } from '../domains/auth/store/authStore.ts'
 
 export default function AuthPage() {
     const [isLogin, setIsLogin] = useState<boolean>(true)
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/home', { replace: true })
+        }
+    }, [isAuthenticated, navigate])
+
     return (
         <div className="bg-base-200 flex h-screen w-screen overflow-hidden">
             <div className="m-1 relative hidden flex-1 flex-col justify-end overflow-hidden p-12 md:flex rounded-lg ">
