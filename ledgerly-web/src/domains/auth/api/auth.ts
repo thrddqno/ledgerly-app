@@ -1,4 +1,4 @@
-import api from '../../../common/api/axios.ts'
+import api from '../../../shared/api/axios.ts'
 
 export async function fetchUser(signal?: AbortSignal) {
     const response = await api.get('/user/me', { signal })
