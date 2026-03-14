@@ -34,8 +34,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/auth/login",
                                 "/auth/register",
-                                "/auth/refresh",
-                                "/user/check-auth"
+                                "/auth/refresh"
                         )
                         .permitAll()
                         .anyRequest()

@@ -32,8 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/auth/register",
             "/auth/refresh",
             "/v3/api-docs",
-            "/swagger-ui",
-            "/user/check-auth"
+            "/swagger-ui"
     );
 
     private final JwtService jwtService;
