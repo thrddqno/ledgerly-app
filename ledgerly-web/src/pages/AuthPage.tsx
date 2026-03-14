@@ -48,7 +48,7 @@ export default function AuthPage() {
                         )}
                     </h2>
 
-                    <p className="text-text-secondary mb-8 text-center text-sm">
+                    <p className="text-base-content/60 mb-8 text-center text-sm">
                         {isLogin ? (
                             <>
                                 Don't have an account?{' '}
