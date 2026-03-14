@@ -63,8 +63,8 @@ api.interceptors.response.use(
             return Promise.reject(error)
         }
 
-        //handle 401 and 403 responses
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        //handle 401
+        if (error.response?.status === 401) {
             //if request alr retried, reject to avoid loops
             if (originalRequest._retry) {
                 window.dispatchEvent(new CustomEvent('auth:unauthorized'))
