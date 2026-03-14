@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import { useAuthStore } from '../store/authStore.ts'
 import {
@@ -13,6 +14,7 @@ import {
 import { InputField } from './InputField.tsx'
 
 export function LoginForm() {
+    const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const { login, error } = useAuthStore()
 
@@ -26,7 +28,12 @@ export function LoginForm() {
     })
 
     const onSubmit = async (data: LoginFormData) => {
-        await login(data.email, data.password)
+        try {
+            await login(data.email, data.password)
+            navigate('/home')
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     return (

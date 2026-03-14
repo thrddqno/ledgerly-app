@@ -29,12 +29,17 @@ export function RegisterForm() {
     const password = watch('password')
 
     const onSubmit = async (data: RegisterFormData) => {
-        await registerStore(
-            data.firstName,
-            data.lastName,
-            data.email,
-            data.password
-        )
+        try {
+            await registerStore(
+                data.firstName,
+                data.lastName,
+                data.email,
+                data.password
+            )
+            navigate('/home')
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     return (
