@@ -1,7 +1,5 @@
 package com.thrddqno.ledgerlyapi.common.security;
 
-import com.thrddqno.ledgerlyapi.common.security.auth.AuthenticationService;
-import com.thrddqno.ledgerlyapi.common.security.auth.exception.AuthenticationException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/auth/register",
             "/auth/refresh",
             "/v3/api-docs",
-            "/swagger-ui"
+            "/swagger-ui",
+            "/user/check-auth"
     );
 
     private final JwtService jwtService;
