@@ -5,8 +5,7 @@ import { useAuthStore } from '../../domains/auth/store/authStore.ts'
 import Spinner from './Spinner.tsx'
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {
-    const isAuthenticated = useAuthStore.getState().isAuthenticated
-    const isLoading = useAuthStore.getState().isLoading
+    const { isAuthenticated, isLoading } = useAuthStore()
 
     if (isLoading) return <Spinner />
 
