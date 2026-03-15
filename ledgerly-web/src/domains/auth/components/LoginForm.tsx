@@ -30,7 +30,6 @@ export function LoginForm() {
     const onSubmit = async (data: LoginFormData) => {
         try {
             await login(data.email, data.password)
-            navigate('/home')
         } catch (e) {
             console.error(e)
         }

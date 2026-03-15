@@ -36,7 +36,6 @@ export function RegisterForm() {
                 data.email,
                 data.password
             )
-            navigate('/home')
         } catch (e) {
             console.error(e)
         }
