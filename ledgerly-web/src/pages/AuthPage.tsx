@@ -27,13 +27,13 @@ export default function AuthPage() {
                         filter: 'saturate(0.65) brightness(0.5)',
                     }}
                 />
-                <div className="from-primary via-primary/20 absolute inset-0 bg-linear-to-t to-transparent" />
+                <div className="from-[#0D0D0DFF] via-[#0D0D0DFF]/20 absolute inset-0 bg-linear-to-t to-transparent" />
 
                 <div className="relative z-10">
-                    <p className="text-accent-content mb-3 text-sm font-medium tracking-[0.15em] uppercase">
+                    <p className="text-[#FFFFFFFF] mb-3 text-sm font-medium tracking-[0.15em] uppercase">
                         One dashboard for all your wallets
                     </p>
-                    <h1 className="text-accent-content text-5xl leading-tight font-black xl:text-6xl">
+                    <h1 className="text-[#FFFFFFFF] text-5xl leading-tight font-black xl:text-6xl">
                         Know Where
                         <br />
                         Your <span className="text-accent">Money</span>
