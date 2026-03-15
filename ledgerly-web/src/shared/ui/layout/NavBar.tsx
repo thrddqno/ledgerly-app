@@ -64,7 +64,7 @@ export default function NavBar() {
                 <CreateDropdown />
                 <button
                     onClick={toggleUserMenu}
-                    className="cursor-pointer transition-all hover:bg-neutral/20 hover:text-neutral-content flex flex-row items-center justify-center text-neutral border-neutral border text-sm w-9 h-9 rounded-4xl"
+                    className="cursor-pointer transition-all hover:bg-neutral/20 flex flex-row items-center justify-center text-neutral border-neutral border text-sm w-9 h-9 rounded-4xl"
                 >
                     {user
                         ? user?.firstName.charAt(0).toUpperCase() +
