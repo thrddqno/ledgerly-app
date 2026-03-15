@@ -22,17 +22,18 @@ export default function SideBar() {
 
             <nav className="flex flex-col gap-4">
                 {navItems.map((item) => {
+                    const Icon = item.icon
                     const isActive = location.pathname === item.path
                     return (
                         <button
                             key={item.label}
                             onClick={() => navigate(item.path)}
-                            className={`flex cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-sm transition-all 
-                            ${isActive ? 'bg-accent/10 text-accent font-semibold' : 'text-base-content'}`}
+                            className={` flex cursor-pointer items-center gap-3 rounded-xl  px-3 py-3 text-sm transition-colors 
+                            ${isActive ? 'bg-accent/10 text-accent font-semibold' : 'hover:bg-base-content/10 text-base-content'}`}
                         >
-                            <item.icon
+                            <Icon
                                 size={16}
-                                className={` ${isActive ? 'text-accent' : 'text-base-content/40'}`}
+                                className={` ${isActive ? 'text-accent' : 'text-base-content/40 '}`}
                             />
                             {item.label}
                         </button>
