@@ -2,26 +2,19 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 
 import { useAuthStore } from '../store/authStore.ts'
-import {
-    type LoginFormData,
-    loginSchema,
-    type RegisterFormData,
-    registerSchema,
-} from '../types/authSchema.ts'
+import { type LoginFormData, loginSchema } from '../types/authSchema.ts'
 import { InputField } from './InputField.tsx'
 
 export function LoginForm() {
-    const navigate = useNavigate()
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const { login, error } = useAuthStore()
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         mode: 'onChange',

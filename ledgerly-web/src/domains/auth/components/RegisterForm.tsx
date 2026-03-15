@@ -2,16 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Check, Eye, EyeOff, X } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 
 import { useAuthStore } from '../store/authStore.ts'
-import { registerSchema, type RegisterFormData } from '../types/authSchema.ts'
+import { type RegisterFormData, registerSchema } from '../types/authSchema.ts'
 import { passwordRequirements } from '../util/passwordValidation.ts'
 import { InputField } from './InputField.tsx'
 
 export function RegisterForm() {
-    const { register: registerStore, isLoading, error } = useAuthStore()
-    const navigate = useNavigate()
+    const { register: registerStore, error } = useAuthStore()
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const [showConfirmPassword, setShowConfirmPassword] =
         useState<boolean>(false)
@@ -19,7 +17,7 @@ export function RegisterForm() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: { errors },
         watch,
     } = useForm<RegisterFormData>({
         resolver: zodResolver(registerSchema),
