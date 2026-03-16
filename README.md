@@ -64,11 +64,11 @@ Check out the live demo on this site: _🚧 Work in Progress (WIP)_
 <summary>Running using <code>docker-compose.yml</code></summary>
 
 ### Prerequisites
+
 - Install [Docker](https://www.docker.com/get-started) (Engine + Compose)
 - Install Git
 
 #### 1. Clone the repository
-
 
 ```bash
 git clone https://github.com/thrddqno/ledgerly-app.git
@@ -83,17 +83,17 @@ Here is what you should change in the `docker-compose.yml`
 **2.1 DB Service**
 
 ```yaml
-  db:
-    image: postgres:latest
-    container_name: ledgerly-db
-    environment:
-      POSTGRES_USER: #SET USERNAME HERE
-      POSTGRES_PASSWORD: #SET PASSWORD HERE
-      POSTGRES_DB: ledgerly
-    ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/
+db:
+  image: postgres:latest
+  container_name: ledgerly-db
+  environment:
+    POSTGRES_USER: #SET USERNAME HERE
+    POSTGRES_PASSWORD: #SET PASSWORD HERE
+    POSTGRES_DB: ledgerly
+  ports:
+    - '5432:5432'
+  volumes:
+    - db-data:/var/lib/postgresql/
 ```
 
 **2.2 Backend Service**
@@ -121,7 +121,9 @@ docker compose up -d
 ```
 
 ### 4. Verify containers
+
 Should list 'backend' and 'db' containers running
+
 ```bash
 docker ps
 ```
@@ -135,15 +137,16 @@ docker compose logs -f db
 ```
 
 ### 6. Stop services
+
 Stops and removes containers, networks, but volumes remain
 
 ```bash
 docker compose down
 ```
-___
+
+---
 
 </details>
-
 
 <details>
 <summary>Running using <code>mvnw</code></summary>
@@ -210,12 +213,14 @@ npm install
 ```bash
 npm start
 ```
+
 </details>
 </details>
 
 ## 🗺️ Roadmap
 
 _Roadmap may change according to alignment_
+
 <!-- Add Roadmap -->
 
 ### Phase 1 - Core Stability
@@ -230,15 +235,18 @@ _Roadmap may change according to alignment_
 - [x] Set HttpOnly cookie for JWT readying for front-end impl
 
 ### Phase 2 - UI & UX
-- [ ] Design UI using [Figma](https://www.figma.com/proto/wp8dR6lr0DHMHQpFpndSlr/Ledgerly-App?node-id=2-2&t=YqoDwgmjpVDJX7No-1)
+
 - **Front-end implementation**
-  - [ ] Build the React frontend to fully consume the backend APIs.
+  - [ ] Build the React frontend to fully consume the backend API endpoints.
+    - [ ] Wallet
+    - [ ] Transactions
+    - [ ] Categories
   - [ ] Responsive UI for desktop and mobile.
-  - [ ] Form validations and user-friendly error handling.
-  - [ ] Theme selection (light/dark mode).
+  - [x] Form validations and user-friendly error handling.
+  - [x] Theme selection (light/dark mode).
 - **Reporting & Analytics**
-  - [ ] Dashboard for transaction summaries, charts, and trends. 
-  - [ ] Monthly/weekly summaries by category or wallet. 
+  - [ ] Dashboard for transaction summaries, charts, and trends.
+  - [ ] Monthly/weekly summaries by category or wallet.
   - [ ] Export reports as CSV or PDF.
 - **User Settings & Personalization**
   - [ ] Profile management (name, email, password change) _means i will have token invalidation thingy idk_
@@ -252,23 +260,12 @@ Distributed under the Apache-2.0 license. See [
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
 [forks-shield]: https://img.shields.io/github/forks/thrddqno/ledgerly-app.svg?style=for-the-badge
-
 [forks-url]: https://github.com/thrddqno/ledgerly-app/network/members
-
 [stars-shield]: https://img.shields.io/github/stars/thrddqno/ledgerly-app.svg?style=for-the-badge
-
 [stars-url]: https://github.com/thrddqno/ledgerly-app/stargazers
-
 [issues-shield]: https://img.shields.io/github/issues/thrddqno/ledgerly-app.svg?style=for-the-badge
-
 [issues-url]: https://github.com/thrddqno/ledgerly-app/issues
-
 [license-shield]: https://img.shields.io/github/license/thrddqno/ledgerly-app.svg?style=for-the-badge
-
 [license-url]: https://github.com/thrddqno/ledgerly-app/blob/main/LICENSE.txt
-
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-
 [linkedin-url]: https://linkedin.com/in/thrddqno
-
-
