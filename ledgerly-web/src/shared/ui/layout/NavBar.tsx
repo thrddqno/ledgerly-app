@@ -42,7 +42,7 @@ export default function NavBar() {
     const { toggle: toggleCreate } = useDropdown('create')
 
     return (
-        <div className="flex flex-row justify-between items-center p-5 border-b border-base-300">
+        <div className="flex flex-row justify-between items-center py-5 border-b border-base-300">
             <div className="flex flex-col">
                 <span className="font-bold text-neutral text-2xl">
                     {greeting}, {user?.firstName}!
