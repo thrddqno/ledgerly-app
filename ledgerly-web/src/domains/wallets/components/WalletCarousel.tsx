@@ -47,22 +47,24 @@ export function WalletCarousel() {
                 </div>
 
                 {/* Left Button - Overlay on left side */}
-                <button
-                    onClick={() => scroll('prev')}
-                    disabled={!canScrollPrev}
-                    className="cursor-pointer absolute top-1/2 left-2 -translate-y-1/2 scale-0 bg-primary/25 hover:bg-primary disabled:scale-0 group-hover:scale-100 text-primary-content rounded-full p-2 disabled:cursor-not-allowed transition-all z-10"
-                >
-                    <ChevronLeft size={20} />
-                </button>
+                {canScrollPrev && (
+                    <button
+                        onClick={() => scroll('prev')}
+                        className="group/icon absolute left-0 top-1/2 -translate-y-1/2 scale-0 cursor-pointer group-hover:scale-100 h-full w-10 text-base-content hover:bg-base-300/60 rounded-field p-2 disabled:cursor-not-allowed transition-colors z-3"
+                    >
+                        <ChevronLeft className="group-hover/icon:scale-140 transition-transform" />
+                    </button>
+                )}
 
                 {/* Right Button - Overlay on right side */}
-                <button
-                    onClick={() => scroll('next')}
-                    disabled={!canScrollNext}
-                    className="cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 scale-0 bg-primary/25 hover:bg-primary disabled:scale-0 group-hover:scale-100 text-primary-content rounded-full p-2 disabled:cursor-not-allowed transition-all z-10"
-                >
-                    <ChevronRight size={20} />
-                </button>
+                {canScrollNext && (
+                    <button
+                        onClick={() => scroll('next')}
+                        className="group/icon absolute right-0 top-1/2 -translate-y-1/2 scale-0 cursor-pointer group-hover:scale-100 h-full w-10 text-base-content hover:bg-base-300/60 rounded-field p-2 disabled:cursor-not-allowed transition-colors z-3"
+                    >
+                        <ChevronRight className="group-hover/icon:scale-140 transition-transform" />
+                    </button>
+                )}
             </div>
             <div
                 className={`flex ${
@@ -71,11 +73,11 @@ export function WalletCarousel() {
                         : 'flex-row h-12.5 gap-2'
                 } pt-2  text-accent font-semibold text-md`}
             >
-                <button className="cursor-pointer hover:bg-base-content/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-all">
+                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-colors">
                     <Plus className="w-5" />
                     Add Wallet
                 </button>
-                <button className="cursor-pointer hover:bg-base-content/10 bg-base-100 w-57.5 h-full border-base-300 border border-field transition-all">
+                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 h-full border-base-300 border border-field transition-colors">
                     Manage Wallets
                 </button>
             </div>
