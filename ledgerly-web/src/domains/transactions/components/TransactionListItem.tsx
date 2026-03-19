@@ -17,7 +17,7 @@ export function TransactionListItem({ transaction }: Props) {
         (transaction.transfer && transaction.isIncoming)
 
     return (
-        <div className="w-full h-16 px-4 py-2 gap-2 hover:bg-base-300 rounded-field justify-between flex flex-row items-center transition-all">
+        <div className="w-full h-16 px-4 py-2 gap-2 hover:bg-base-300 cursor-default rounded-field justify-between flex flex-row items-center transition-all">
             <div className="flex flex-row gap-5 items-center justify-center">
                 <input
                     type="checkbox"
