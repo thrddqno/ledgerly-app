@@ -20,10 +20,10 @@ export function useWallets(): UseQueryResult<Wallet[]> {
     return useQuery({ queryKey: ['wallets'], queryFn: getAllWallet })
 }
 
-export function useWallet(id: string): UseQueryResult<Wallet> {
+export function useWallet(id?: string): UseQueryResult<Wallet> {
     return useQuery({
         queryKey: ['wallet', id],
-        queryFn: () => getWallet(id),
+        queryFn: () => getWallet(id!),
         enabled: !!id,
     })
 }
