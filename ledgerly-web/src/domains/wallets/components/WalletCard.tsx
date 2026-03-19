@@ -35,13 +35,13 @@ export default function WalletCard({ wallet }: Props) {
                             />
                         </div>
                         <span
-                            className={`${isSelectedWallet ? 'text-accent-content' : 'text-primary'} text-md font-semibold truncate`}
+                            className={`${isSelectedWallet ? 'text-accent-content' : 'text-primary'} text-md truncate`}
                         >
                             {wallet.name}
                         </span>
                     </div>
                     <span
-                        className={`text-lg truncate font-extrabold tabular-nums ${isPositive ? 'text-success' : 'text-error'} `}
+                        className={`text-md truncate font-bold tabular-nums ${isPositive ? 'text-success' : 'text-error'} `}
                     >
                         {isPositive ? '+' : ''}
                         {formatted}
