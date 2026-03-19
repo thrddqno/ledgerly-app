@@ -61,8 +61,12 @@ public class CategoryService {
      * GET METHODS
      */
 
+    public List<CategoryResponse> getCategories(User user) {
+        return categoryRepository.findAllByUser(user).stream().map(categoryMapper :: toCategoryResponse).toList();
+    }
+
     @Transactional
-    public FormattedCategoryResponse getCategories(User user){
+    public FormattedCategoryResponse getCategoriesFormatted(User user){
         List<Category> categories = categoryRepository.findAllByUser(user);
 
         Map<TransactionType, List<CategoryResponse>> categoriesGrouped = categories.stream()

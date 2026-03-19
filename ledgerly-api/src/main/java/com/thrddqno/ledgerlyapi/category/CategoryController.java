@@ -19,8 +19,13 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<FormattedCategoryResponse> getCategories(@AuthenticationPrincipal User user){
+    public ResponseEntity<List<CategoryResponse>> getCategories(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(categoryService.getCategories(user));
+    }
+
+    @GetMapping("/formatted")
+    public ResponseEntity<FormattedCategoryResponse> getCategoriesFormatted(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(categoryService.getCategoriesFormatted(user));
     }
 
     @GetMapping("/type/{transactionType}")
