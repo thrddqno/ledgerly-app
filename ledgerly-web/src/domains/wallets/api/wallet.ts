@@ -7,7 +7,7 @@ export async function getAllWallet(): Promise<Wallet[]> {
 }
 
 export async function getWallet(id: string): Promise<Wallet> {
-    const response = await api.get(`/api/v1/wallet/${id}/details/`)
+    const response = await api.get(`/api/v1/wallet/${id}/details`)
     return response.data
 }
 
