@@ -2,15 +2,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { formatCurrency } from '../../../shared/utils/currencyFormatter.ts'
 import { IconParser } from '../../categories/utils/iconParser.ts'
-import { useWallet } from '../../wallets/hooks/useWallets.ts'
+import type { Wallet } from '../../wallets/types/wallet.ts'
 import type { Transaction } from '../types/transaction.ts'
 
 interface Props {
     transaction: Transaction
+    wallets?: Wallet[]
 }
 
-export function TransactionListItem({ transaction }: Props) {
-    const { data: relatedWallet } = useWallet(transaction.relatedWalletId)
+export function TransactionListItem({ transaction, wallets }: Props) {
+    const relatedWallet = wallets?.find(
+        (wallet: Wallet) => wallet.id === transaction.relatedWalletId
+    )
     const formatted = formatCurrency(transaction.amount)
     const isPositive =
         transaction.categoryResponse.transactionType === 'INCOME' ||

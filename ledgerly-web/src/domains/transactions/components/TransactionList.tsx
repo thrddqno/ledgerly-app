@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react'
 import { useInfiniteScroll } from '../../../shared/ui/hooks/useInfiniteScroll.ts'
 import { formatCurrency } from '../../../shared/utils/currencyFormatter.ts'
 import { DateFormatter } from '../../../shared/utils/dateFormatter.ts'
+import { useWallets } from '../../wallets/hooks/useWallets.ts'
 import type { Transaction } from '../types/transaction.ts'
 import { TransactionListItem } from './TransactionListItem.tsx'
 
@@ -55,6 +56,7 @@ export function TransactionList({
     const scrollRef = useRef<HTMLDivElement>(null)
     const sentinel = useRef<HTMLDivElement>(null)
     const groups = groupByDate(transactions)
+    const { data: wallets } = useWallets()
     useInfiniteScroll(onFetchNextPage, isLoading, sentinel)
 
     const isPositive = (total: number) => {
@@ -106,7 +108,11 @@ export function TransactionList({
                         }
                     >
                         {txs.map((tx, i) => (
-                            <TransactionListItem key={i} transaction={tx} />
+                            <TransactionListItem
+                                key={tx.id}
+                                transaction={tx}
+                                wallets={wallets}
+                            />
                         ))}
                     </div>
                 </div>
