@@ -17,7 +17,7 @@ export function TransactionListItem({ transaction }: Props) {
         (transaction.transfer && transaction.isIncoming)
 
     return (
-        <div className="w-full h-16 px-4 py-2 gap-2 hover:bg-base-300 cursor-default rounded-field justify-between flex flex-row items-center transition-all">
+        <div className="w-full h-16 px-4 py-2 gap-2 hover:bg-base-300 cursor-default rounded-field flex flex-row items-center transition-all">
             <div className="flex flex-row gap-5 items-center justify-center">
                 <input
                     type="checkbox"
@@ -36,7 +36,7 @@ export function TransactionListItem({ transaction }: Props) {
                         )}
                     />
                 </div>
-                <div className="flex flex-col w-60 text-sm gap-1">
+                <div className="flex flex-col w-80 text-sm gap-1">
                     <span className="text-base-content">
                         {transaction.categoryResponse.name}
                     </span>
@@ -57,12 +57,12 @@ export function TransactionListItem({ transaction }: Props) {
                     </span>
                 </div>
             </div>
-            <span className="text-base-content/60 flex justify-start items-start w-60 text-sm truncate">
+            <span className="text-base-content/60 flex justify-start items-start w-100 text-sm truncate">
                 {transaction.notes}
             </span>
             <div className={'w-60'}>
                 {transaction.transfer && (
-                    <div className="text-base-content/60  flex gap-1 text-sm truncate">
+                    <div className="text-base-content/60 flex gap-1 text-sm truncate">
                         <span>
                             {`${transaction.isIncoming ? 'From' : 'To'}`}
                         </span>
@@ -73,7 +73,7 @@ export function TransactionListItem({ transaction }: Props) {
                 )}
             </div>
             <span
-                className={`font-semibold text-sm truncate ${
+                className={`font-semibold text-sm truncate ml-auto ${
                     isPositive ? 'text-success' : 'text-error'
                 }`}
             >
