@@ -28,7 +28,6 @@ export default function TransactionsPage() {
                         onFetchNextPage={
                             hasNextPage ? () => fetchNextPage() : undefined
                         }
-                        resetScroll={selectedWallet}
                     />
                 </div>
             </div>

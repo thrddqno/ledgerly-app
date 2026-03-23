@@ -1,7 +1,7 @@
 import { faBoxOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Plus } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 import { useInfiniteScroll } from '../../../shared/ui/hooks/useInfiniteScroll.ts'
 import { formatCurrency } from '../../../shared/utils/currencyFormatter.ts'
@@ -14,7 +14,6 @@ interface Props {
     transactions?: Transaction[]
     isLoading?: boolean
     onFetchNextPage?: () => void
-    resetScroll?: string | null
 }
 
 const isInFlow = (transaction: Transaction): boolean => {
@@ -22,14 +21,15 @@ const isInFlow = (transaction: Transaction): boolean => {
     return transaction.transfer && transaction.isIncoming
 }
 
+const dateFormatter = new DateFormatter(
+    { month: 'long', day: 'numeric', year: 'numeric' },
+    true
+)
+
 function groupByDate(
     transactions: Transaction[] | undefined
 ): [string, Transaction[], number][] {
     const map = new Map<string, Transaction[]>()
-    const dateFormatter = new DateFormatter(
-        { month: 'long', day: 'numeric', year: 'numeric' },
-        true
-    )
 
     for (const tx of transactions) {
         const label = dateFormatter.formatDate(tx.date)
@@ -51,9 +51,7 @@ export function TransactionList({
     transactions,
     isLoading,
     onFetchNextPage,
-    resetScroll,
 }: Props) {
-    const scrollRef = useRef<HTMLDivElement>(null)
     const sentinel = useRef<HTMLDivElement>(null)
     const groups = groupByDate(transactions)
     const { data: wallets } = useWallets()
@@ -63,12 +61,8 @@ export function TransactionList({
         return total > 0
     }
 
-    useEffect(() => {
-        scrollRef.current?.scrollTo({ top: 0 })
-    }, [resetScroll])
-
     return (
-        <div ref={scrollRef} className="flex flex-col">
+        <div className="flex flex-col">
             <button
                 className={
                     'rounded-field bg-accent cursor-pointer hover:bg-accent/80 transition-all font-semibold text-accent-content w-fit text-sm items-center px-3 py-1.5 gap-1 flex flex-row'
