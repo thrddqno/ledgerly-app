@@ -19,7 +19,7 @@ const isInFlow = (transaction: Transaction): boolean => {
 }
 
 function groupByDate(
-    transactions: Transaction[]
+    transactions: Transaction[] | undefined
 ): [string, Transaction[], number][] {
     const map = new Map<string, Transaction[]>()
     const dateFormatter = new DateFormatter(
