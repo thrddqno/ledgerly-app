@@ -7,7 +7,7 @@ interface UseInfiniteScrollOptions {
 
 export function useInfiniteScroll(
     onLoadMore: (() => void) | undefined,
-    isLoading: boolean,
+    isLoading: boolean | undefined,
     scrollContainerRef: React.RefObject<HTMLDivElement | null>,
     options: UseInfiniteScrollOptions = {}
 ) {
