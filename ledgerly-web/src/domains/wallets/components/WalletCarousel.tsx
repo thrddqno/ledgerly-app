@@ -86,7 +86,7 @@ export function WalletCarousel() {
             {overflow && (
                 <div
                     className={
-                        'flex flex-col h-25 gap-1 pt-2  text-accent font-semibold text-md'
+                        'flex flex-row h-12.5 gap-2 pt-2 text-accent font-semibold text-md'
                     }
                 >
                     <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-colors">
