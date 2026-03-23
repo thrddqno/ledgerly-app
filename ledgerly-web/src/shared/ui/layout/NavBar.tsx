@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { useAuthStore } from '../../../domains/auth/store/authStore.ts'
 import { useDropdown } from '../../hooks/useDropdown.ts'
-import { formatDate } from '../../utils/dateFormatter.ts'
+import { DateFormatter } from '../../utils/dateFormatter.ts'
 import { CreateDropdown } from '../components/dropdowns/CreateDropdown.tsx'
 import { UserMenuDropdown } from '../components/dropdowns/UserMenuDropdown.tsx'
 
@@ -31,7 +31,12 @@ function useDynamicGreeting() {
 }
 
 function useGetCurrentDate() {
-    return formatDate(new Date().toISOString())
+    const dateFormatter = new DateFormatter({
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+    })
+    return dateFormatter.formatDate(new Date().toISOString())
 }
 
 export default function NavBar() {
