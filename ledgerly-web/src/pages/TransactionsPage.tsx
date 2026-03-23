@@ -18,14 +18,16 @@ export default function TransactionsPage() {
             <div className="flex flex-col w-full h-screen overflow-hidden px-7 py-3">
                 <NavBar />
                 <WalletCarousel />
-                <TransactionList
-                    transactions={data?.flat ?? []}
-                    isLoading={isLoading}
-                    onFetchNextPage={
-                        hasNextPage ? () => fetchNextPage() : undefined
-                    }
-                    resetScroll={selectedWallet}
-                />
+                <div className={'mt-5'}>
+                    <TransactionList
+                        transactions={data?.flat ?? []}
+                        isLoading={isLoading}
+                        onFetchNextPage={
+                            hasNextPage ? () => fetchNextPage() : undefined
+                        }
+                        resetScroll={selectedWallet}
+                    />
+                </div>
             </div>
         </div>
     )
