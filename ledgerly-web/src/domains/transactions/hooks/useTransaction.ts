@@ -24,7 +24,7 @@ import type {
 } from '../types/transaction.ts'
 
 interface Parameters {
-    walletId?: string
+    walletId?: string | null
     transactionId?: string
     startDate?: string
     endDate?: string
