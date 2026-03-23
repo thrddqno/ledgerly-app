@@ -36,7 +36,7 @@ export function TransactionListItem({ transaction }: Props) {
                         )}
                     />
                 </div>
-                <div className="flex flex-col text-sm gap-1">
+                <div className="flex flex-col w-60 text-sm gap-1">
                     <span className="text-base-content">
                         {transaction.categoryResponse.name}
                     </span>
@@ -57,12 +57,12 @@ export function TransactionListItem({ transaction }: Props) {
                     </span>
                 </div>
             </div>
-            <span className="text-base-content/60 text-sm truncate">
+            <span className="text-base-content/60 flex justify-start items-start w-60 text-sm truncate">
                 {transaction.notes}
             </span>
-            <div>
+            <div className={'w-60'}>
                 {transaction.transfer && (
-                    <div className="text-base-content/60 flex gap-1 text-sm truncate">
+                    <div className="text-base-content/60  flex gap-1 text-sm truncate">
                         <span>
                             {`${transaction.isIncoming ? 'From' : 'To'}`}
                         </span>
