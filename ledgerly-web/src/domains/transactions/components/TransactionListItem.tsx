@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { formatCurrency } from '../../../shared/utils/currencyFormatter.ts'
-import { IconParser } from '../../categories/utils/IconParser.ts'
+import { IconParser } from '../../categories/utils/iconParser.ts'
 import { useWallet } from '../../wallets/hooks/useWallets.ts'
 import type { Transaction } from '../types/transaction.ts'
 
@@ -36,7 +36,7 @@ export function TransactionListItem({ transaction }: Props) {
                         )}
                     />
                 </div>
-                <div className="flex flex-col text-md">
+                <div className="flex flex-col text-sm gap-1">
                     <span className="text-base-content">
                         {transaction.categoryResponse.name}
                     </span>
@@ -73,7 +73,7 @@ export function TransactionListItem({ transaction }: Props) {
                 )}
             </div>
             <span
-                className={`font-semibold text-md truncate ${
+                className={`font-semibold text-sm truncate ${
                     isPositive ? 'text-success' : 'text-error'
                 }`}
             >
