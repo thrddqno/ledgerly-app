@@ -85,9 +85,6 @@ api.interceptors.response.use(
             try {
                 await api.post('/auth/refresh')
 
-                //todo: test if the delay is necessary or not.
-                await new Promise((resolve) => setTimeout(resolve, 100))
-
                 //resolve all queued requests so they fire with new token
                 processQueue(null)
                 return api(originalRequest)
