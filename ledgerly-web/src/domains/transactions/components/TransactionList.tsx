@@ -1,3 +1,6 @@
+import { faBoxOpen } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Plus } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import { useInfiniteScroll } from '../../../shared/ui/hooks/useInfiniteScroll.ts'
@@ -63,10 +66,28 @@ export function TransactionList({
     }, [resetScroll])
 
     return (
-        <div className="flex gap-5">
         <div ref={scrollRef} className="flex flex-col">
+            <button
+                className={
+                    'rounded-field bg-accent cursor-pointer hover:bg-accent/80 transition-all font-semibold text-accent-content w-fit text-sm items-center px-3 py-1.5 gap-1 flex flex-row'
+                }
+            >
+                <Plus size={16} />
+                Add Transaction
+            </button>
+
+            {transactions?.length === 0 && (
+                <div
+                    className={
+                        'flex flex-col justify-center text-base-content/30 cursor-default items-center h-1/2'
+                    }
+                >
+                    <FontAwesomeIcon icon={faBoxOpen} />
+                    <span>No Transactions</span>
+                </div>
+            )}
             {groups.map(([dateLabel, txs, total]) => (
-                <div key={dateLabel} className={'w-full'}>
+                <div key={dateLabel} className={'w-full mb-3'}>
                     <div
                         className={
                             'flex items-center uppercase font py-2 font-bold text-[0.7rem] text-base-content/30 justify-between'
@@ -74,6 +95,7 @@ export function TransactionList({
                     >
                         <span>{dateLabel}</span>
                         <span className={'text-xs mr-5'}>
+                            {isPositive(total) ? '+' : ''}
                             {formatCurrency(total)}
                         </span>
                     </div>
