@@ -16,6 +16,9 @@ export default function TransactionsPage() {
         <div className="bg-base-200 flex flex-row ">
             <SideBar />
             <div className="flex flex-col w-full h-screen overflow-hidden px-7 py-3">
+            <div className={''}>
+                <SideBar />
+            </div>
                 <NavBar />
                 <WalletCarousel />
                 <div className={'mt-5'}>

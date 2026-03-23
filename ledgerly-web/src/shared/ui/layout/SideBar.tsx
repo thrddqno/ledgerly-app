@@ -12,7 +12,7 @@ export default function SideBar() {
     const navigate = useNavigate()
 
     return (
-        <div className="bg-base-200 border-base-300 border-r h-screen w-65 shrink-0 flex flex-col px-4 py-6">
+        <div className="bg-base-200 border-base-300 border-r overflow-hidden h-screen w-65 shrink-0 flex flex-col px-4 py-6">
             <button className=" flex mb-9 flex-col item-center justify-center p-2 font-extrabold cursor-pointer">
                 <span className="text-3xl text-accent">Ledgerly</span>
                 <span className="text-base-content/80 -translate-y-0.75 text-[0.70rem]">
