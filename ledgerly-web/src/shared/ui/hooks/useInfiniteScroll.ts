@@ -8,13 +8,13 @@ interface UseInfiniteScrollOptions {
 export function useInfiniteScroll(
     onLoadMore: (() => void) | undefined,
     isLoading: boolean | undefined,
-    scrollContainerRef: React.RefObject<HTMLDivElement | null>,
+    sentinel: React.RefObject<HTMLDivElement | null>,
     options: UseInfiniteScrollOptions = {}
 ) {
-    const { threshold = 1 } = options
+    const { threshold = 0 } = options
 
     useEffect(() => {
-        const container = scrollContainerRef.current
+        const container = sentinel.current
         if (!container || !onLoadMore) return
 
         const observer = new IntersectionObserver(
@@ -23,18 +23,19 @@ export function useInfiniteScroll(
                     onLoadMore()
                 }
             },
-            { threshold, root: container }
+            { threshold, root: null, rootMargin: '0px 0px 50px 0px' }
         )
 
+        /*
         const sentinel = document.createElement('div')
-        sentinel.className = 'h-0'
+        sentinel.className = 'h-1'
         container.appendChild(sentinel)
-        observer.observe(sentinel)
+        */
+        observer.observe(container)
 
         return () => {
-            observer.unobserve(sentinel)
+            observer.unobserve(container)
             observer.disconnect()
-            sentinel.remove()
         }
-    }, [isLoading, onLoadMore, scrollContainerRef, threshold])
+    }, [isLoading, onLoadMore, sentinel, threshold])
 }

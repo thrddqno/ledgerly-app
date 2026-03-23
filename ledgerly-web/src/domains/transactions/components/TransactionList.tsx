@@ -50,17 +50,21 @@ export function TransactionList({
     resetScroll,
 }: Props) {
     const scrollRef = useRef<HTMLDivElement>(null)
+    const sentinel = useRef<HTMLDivElement>(null)
     const groups = groupByDate(transactions)
-    useInfiniteScroll(onFetchNextPage, isLoading, scrollRef)
+    useInfiniteScroll(onFetchNextPage, isLoading, sentinel)
+
+    const isPositive = (total: number) => {
+        return total > 0
+    }
 
     useEffect(() => {
         scrollRef.current?.scrollTo({ top: 0 })
     }, [resetScroll])
 
-    if (isLoading) return <Spinner />
-
     return (
         <div className="flex gap-5">
+        <div ref={scrollRef} className="flex flex-col">
             {groups.map(([dateLabel, txs, total]) => (
                 <div key={dateLabel} className={'w-full'}>
                     <div
@@ -85,6 +89,7 @@ export function TransactionList({
                     </div>
                 </div>
             ))}
+            <div ref={sentinel} className="h-1" />
         </div>
     )
 }
