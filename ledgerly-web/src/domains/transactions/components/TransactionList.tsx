@@ -57,6 +57,8 @@ export function TransactionList({
         scrollRef.current?.scrollTo({ top: 0 })
     }, [resetScroll])
 
+    if (isLoading) return <Spinner />
+
     return (
         <div className="flex gap-5">
             {groups.map(([dateLabel, txs, total]) => (
