@@ -2,6 +2,7 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { useOverflowDetector } from '../../../shared/ui/hooks/useDetectOverflow.ts'
 import { useWallets } from '../hooks/useWallets.ts'
 import WalletCard from './WalletCard.tsx'
 
@@ -12,6 +13,7 @@ export function WalletCarousel() {
     const [canScrollNext, setCanScrollNext] = useState(false)
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const { data: wallets, isLoading } = useWallets()
+    const { ref, overflow } = useOverflowDetector({})
 
     useEffect(() => {
         if (!emblaApi) return
@@ -37,12 +39,27 @@ export function WalletCarousel() {
             </span>
             <div className="group relative ">
                 <div className="overflow-hidden" ref={emblaRef}>
-                    <div className="flex gap-2">
+                    <div ref={ref} className="flex gap-2">
                         {wallets?.map((wallet) => (
                             <div key={wallet.id} className="flex-[0_0_230px]">
                                 <WalletCard wallet={wallet} />
                             </div>
                         ))}
+                        {!overflow && (
+                            <div
+                                className={
+                                    'flex flex-col h-25 gap-1 text-accent font-semibold text-md'
+                                }
+                            >
+                                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-colors">
+                                    <Plus className="w-5" />
+                                    Add Wallet
+                                </button>
+                                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 h-full border-base-300 border border-field transition-colors">
+                                    Manage Wallets
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -66,21 +83,21 @@ export function WalletCarousel() {
                     </button>
                 )}
             </div>
-            <div
-                className={`flex ${
-                    wallets?.length && wallets.length <= 1
-                        ? 'flex-col h-25 gap-1 '
-                        : 'flex-row h-12.5 gap-2'
-                } pt-2  text-accent font-semibold text-md`}
-            >
-                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-colors">
-                    <Plus className="w-5" />
-                    Add Wallet
-                </button>
-                <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 h-full border-base-300 border border-field transition-colors">
-                    Manage Wallets
-                </button>
-            </div>
+            {overflow && (
+                <div
+                    className={
+                        'flex flex-col h-25 gap-1 pt-2  text-accent font-semibold text-md'
+                    }
+                >
+                    <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 flex flex-row gap-2 justify-center items-center h-full border-base-300 border border-field transition-colors">
+                        <Plus className="w-5" />
+                        Add Wallet
+                    </button>
+                    <button className="cursor-pointer hover:bg-base-100/10 bg-base-100 w-57.5 h-full border-base-300 border border-field transition-colors">
+                        Manage Wallets
+                    </button>
+                </div>
+            )}
         </div>
     )
 }
