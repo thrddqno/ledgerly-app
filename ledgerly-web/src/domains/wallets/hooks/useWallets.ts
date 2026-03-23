@@ -36,8 +36,8 @@ export function useCreateWallet(): UseMutationResult<
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: createWallet,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
         },
     })
 }
@@ -50,9 +50,9 @@ export function useUpdateWallet(): UseMutationResult<
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: ({ id, data }) => updateWallet(id, data),
-        onSuccess: async (updatedWallet) => {
-            await queryClient.invalidateQueries({ queryKey: ['wallets'] })
-            await queryClient.invalidateQueries({
+        onSuccess: (updatedWallet) => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
+            queryClient.invalidateQueries({
                 queryKey: ['wallet', updatedWallet.id],
             })
         },
@@ -63,8 +63,8 @@ export function useDeleteWallet(): UseMutationResult<void, Error, string> {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: deleteWallet,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
         },
     })
 }
@@ -73,8 +73,8 @@ export function useReorderWallets(): UseMutationResult<void, Error, string[]> {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: reorderWallets,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: ['wallets'] })
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['wallets'] })
         },
     })
 }
