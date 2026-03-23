@@ -46,7 +46,6 @@ api.interceptors.response.use(
         }
 
         const originalRequest = error.config
-        console.log('Error.config:' + error.config)
 
         //generally just skips these endpoints inorder to prevent infinite loops
         const SKIP_REFRESH_ENDPOINTS = [
